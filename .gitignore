@@ -1,0 +1,111 @@
+# Игнорировать файлы Android Studio
+*.iml
+.idea/
+**/.build/
+**/build/
+*.hprof
+*.trace
+.navigation/
+
+# Игнорировать временные файлы
+.gradle/
+!gradle/wrapper/gradle-wrapper.jar
+.gradle/wrapper/dists/
+/captures/
+.externalNativeBuild/
+.cxx/
+
+# Игнорировать build-артефакты
+*.apk
+*.ap_
+*.aab
+*.aar
+*.jar
+
+# Игнорировать файлы кэша и логов
+*.class
+*.log
+
+# Игнорировать файлы отладки
+debug.keystore
+*.keystore
+*.jks
+*.pfx
+
+# Игнорировать системные файлы
+.DS_Store
+/local.properties
+Thumbs.db
+desktop.ini
+*.swp
+*.swo
+~$*.*
+
+# Игнорировать файлы с секретами
+**/google-services.json
+firebase.json
+.firebaserc
+serviceAccountKey.json
+
+# Service account keys (ВСЕ варианты)
+**/serviceAccountKey.json
+*.service-account.json
+*service_account*.json
+*-credentials.json
+
+# Другие форматы ключей
+*.p12
+*.p8
+*.key
+*.cer
+*.crt
+*.pem
+
+# Папки с ключами
+/keys/
+/secrets/
+/credentials/
+/service-accounts/
+
+# Файлы проектов GIGA IDE
+*.giga-workspace
+*.giga-project
+
+# Настройки workspace (аналог workspace.xml)
+.idea/workspace.giga
+
+# Кэш и временные файлы GIGA IDE
+.idea/giga-cache/
+.idea/giga-index/
+
+# Специфичные плагины GIGA IDE
+.idea/giga-plugins/
+.idea/russian-plugins/
+
+### Kotlin ###
+*.kotlin_module
+.metals/
+bin/
+
+### Compose ###
+**/.compose_metrics/
+**/compose_metrics/
+**/compose_build/
+
+# Полная защита конфигов:
+.env
+.env.*
+*.env
+secrets.*
+*.secrets
+config.*.json
+*-config.properties
+
+# Защита временных файлов:
+*.tmp
+*.temp
+.tmp/
+temp/
+tmp/
+.cache/
+.buildcache/
