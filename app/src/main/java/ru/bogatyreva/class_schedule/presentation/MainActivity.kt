@@ -1,4 +1,4 @@
-package ru.bogatyreva.class_schedule
+package ru.bogatyreva.class_schedule.presentation
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -11,7 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import ru.bogatyreva.class_schedule.ui.theme.Class_ScheduleTheme
+import ru.bogatyreva.class_schedule.presentation.ui.theme.Class_ScheduleTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -1,6 +1,5 @@
-package ru.bogatyreva.class_schedule.ui.theme
+package ru.bogatyreva.class_schedule.presentation.ui.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
