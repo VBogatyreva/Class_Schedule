@@ -2,7 +2,7 @@ package ru.bogatyreva.class_schedule.domain
 
 import java.time.Instant
 
-//для получения отформатированной даты для шапки ("25 марта, вторник")
+//для получения отформатированной даты для шапки ("16 марта, понедельник")
 
 class GetFormattedDateUseCase (
     private val repository: ScheduleRepository

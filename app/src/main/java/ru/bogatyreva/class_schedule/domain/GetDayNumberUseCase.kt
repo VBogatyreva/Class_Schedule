@@ -2,7 +2,7 @@ package ru.bogatyreva.class_schedule.domain
 
 import java.time.Instant
 
-//для получения числа месяца ("24", "25", "26")
+//для получения числа месяца ("16", "17", "18"...)
 
 class GetDayNumberUseCase (
     private val repository: ScheduleRepository

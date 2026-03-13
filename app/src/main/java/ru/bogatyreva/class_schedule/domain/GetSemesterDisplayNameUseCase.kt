@@ -1,6 +1,6 @@
 package ru.bogatyreva.class_schedule.domain
 
-//для получения названия семестра ("Осенний семестр 2025 год")
+//для получения названия семестра ("Весенний семестр 2026 год")
 
 class GetSemesterDisplayNameUseCase (
     private val repository: ScheduleRepository
