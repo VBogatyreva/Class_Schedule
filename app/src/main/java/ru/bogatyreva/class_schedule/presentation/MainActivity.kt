@@ -5,7 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import ru.bogatyreva.class_schedule.data.TestScheduleRepositoryImpl
-//import ru.bogatyreva.class_schedule.presentation.screens.ScheduleScreen
+import ru.bogatyreva.class_schedule.presentation.screens.ScheduleScreen
 import ru.bogatyreva.class_schedule.presentation.screens.ScheduleViewModel
 import ru.bogatyreva.class_schedule.presentation.ui.theme.Class_ScheduleTheme
 
@@ -19,7 +19,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             Class_ScheduleTheme {
-//                ScheduleScreen(viewModel)
+                ScheduleScreen(viewModel)
             }
         }
     }

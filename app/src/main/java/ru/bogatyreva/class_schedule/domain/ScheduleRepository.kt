@@ -6,9 +6,9 @@ import java.time.Instant
 interface ScheduleRepository {
 
     fun getLessonsForDate(date: Instant): Flow<List<Lesson>>          // Основной метод - получение списка уроков
-    suspend fun getFormattedDate(date: Instant): String               // Для шапки - "16 марта, понедельник"
-    suspend fun getSemesterDisplayName(): String                      // Для шапки - "Весенний семестр 2026"
+    suspend fun getMonthYear(date: Instant): String                   // Для шапки - "Апрель 2026"
     suspend fun getLessonsCountForDate(date: Instant): Int            // Для шапки - количество пар
+    suspend fun getLastLessonEndTime(date: Instant): String?          // Получение времени окончания уроков "16:30"
     suspend fun getCalendarDates(centerDate: Instant): List<Instant>  // Для календаря - какие даты показывать
     suspend fun getDayNumber(date: Instant): String                   // Для календаря - числа (16, 17, 18...)
     suspend fun getDayOfWeek(date: Instant): String                   // Для календаря - дни недели (Пн, Вт...)

@@ -11,3 +11,20 @@ class CheckIsSelectedUseCase (
         return repository.isSelected(date, selectedDate)
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
