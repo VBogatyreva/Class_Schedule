@@ -1,9 +1,9 @@
-package ru.bogatyreva.class_schedule.domain
+package ru.bogatyreva.class_schedule.domain.usecase
 
+import ru.bogatyreva.class_schedule.domain.repository.ScheduleRepository
 import java.time.Instant
 
 //для проверки, является ли дата выбранной
-
 class CheckIsSelectedUseCase (
     private val repository: ScheduleRepository
 ) {
@@ -11,20 +11,3 @@ class CheckIsSelectedUseCase (
         return repository.isSelected(date, selectedDate)
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

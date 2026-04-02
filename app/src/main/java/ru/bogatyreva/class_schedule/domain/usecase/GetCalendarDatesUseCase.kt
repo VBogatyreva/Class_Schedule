@@ -1,9 +1,9 @@
-package ru.bogatyreva.class_schedule.domain
+package ru.bogatyreva.class_schedule.domain.usecase
 
+import ru.bogatyreva.class_schedule.domain.repository.ScheduleRepository
 import java.time.Instant
 
 //для получения списка дат для горизонтального календаря
-
 class GetCalendarDatesUseCase (
     private val repository: ScheduleRepository
 ) {

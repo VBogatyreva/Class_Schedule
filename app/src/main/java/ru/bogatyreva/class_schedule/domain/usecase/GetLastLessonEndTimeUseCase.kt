@@ -1,11 +1,10 @@
-package ru.bogatyreva.class_schedule.domain
+package ru.bogatyreva.class_schedule.domain.usecase
 
 import ru.bogatyreva.class_schedule.domain.model.Lesson
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
 //для получения времени окончания последнего занятия
-
 class GetLastLessonEndTimeUseCase {
 
     operator fun invoke(lessons: List<Lesson>): String? {

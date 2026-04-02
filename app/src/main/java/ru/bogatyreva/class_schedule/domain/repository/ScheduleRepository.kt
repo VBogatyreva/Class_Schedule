@@ -1,4 +1,4 @@
-package ru.bogatyreva.class_schedule.domain
+package ru.bogatyreva.class_schedule.domain.repository
 
 import kotlinx.coroutines.flow.Flow
 import ru.bogatyreva.class_schedule.domain.model.Assignment

@@ -1,11 +1,11 @@
-package ru.bogatyreva.class_schedule.domain
+package ru.bogatyreva.class_schedule.domain.usecase
 
 import kotlinx.coroutines.flow.Flow
 import ru.bogatyreva.class_schedule.domain.model.Lesson
+import ru.bogatyreva.class_schedule.domain.repository.ScheduleRepository
 import java.time.Instant
 
 // для получения списка уроков на выбранную дату
-
 class GetLessonsForDateUseCase (
     private val repository: ScheduleRepository
 ) {

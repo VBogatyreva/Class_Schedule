@@ -1,0 +1,13 @@
+package ru.bogatyreva.class_schedule.domain.usecase
+
+import ru.bogatyreva.class_schedule.domain.repository.ScheduleRepository
+import java.time.Instant
+
+// Для преобразования даты в строку с названием месяца и годом для отображения в шапке календаря Апрель 2026
+class GetMonthYearUseCase (
+    private val repository: ScheduleRepository
+) {
+    suspend operator fun invoke(date: Instant): String {
+        return repository.getMonthYear(date)
+    }
+}
