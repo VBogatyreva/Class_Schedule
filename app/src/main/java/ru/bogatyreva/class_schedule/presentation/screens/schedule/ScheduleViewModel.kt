@@ -1,4 +1,4 @@
-package ru.bogatyreva.class_schedule.presentation.screens
+package ru.bogatyreva.class_schedule.presentation.screens.schedule
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -6,18 +6,18 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import ru.bogatyreva.class_schedule.domain.CheckIsSelectedUseCase
-import ru.bogatyreva.class_schedule.domain.CheckIsTodayUseCase
-import ru.bogatyreva.class_schedule.domain.GetCalendarDatesUseCase
-import ru.bogatyreva.class_schedule.domain.GetDayNumberUseCase
-import ru.bogatyreva.class_schedule.domain.GetDayOfWeekUseCase
-import ru.bogatyreva.class_schedule.domain.GetLastLessonEndTimeUseCase
-import ru.bogatyreva.class_schedule.domain.GetLessonsCountForDateUseCase
-import ru.bogatyreva.class_schedule.domain.GetLessonsForDateUseCase
-import ru.bogatyreva.class_schedule.domain.GetMonthYearUseCase
-import ru.bogatyreva.class_schedule.domain.GetTodayUseCase
-import ru.bogatyreva.class_schedule.domain.Lesson
-import ru.bogatyreva.class_schedule.domain.ScheduleRepository
+import ru.bogatyreva.class_schedule.domain.usecase.CheckIsSelectedUseCase
+import ru.bogatyreva.class_schedule.domain.usecase.CheckIsTodayUseCase
+import ru.bogatyreva.class_schedule.domain.usecase.GetCalendarDatesUseCase
+import ru.bogatyreva.class_schedule.domain.usecase.GetDayNumberUseCase
+import ru.bogatyreva.class_schedule.domain.usecase.GetDayOfWeekUseCase
+import ru.bogatyreva.class_schedule.domain.usecase.GetLastLessonEndTimeUseCase
+import ru.bogatyreva.class_schedule.domain.usecase.GetLessonsCountForDateUseCase
+import ru.bogatyreva.class_schedule.domain.usecase.GetLessonsForDateUseCase
+import ru.bogatyreva.class_schedule.domain.usecase.GetMonthYearUseCase
+import ru.bogatyreva.class_schedule.domain.usecase.GetTodayUseCase
+import ru.bogatyreva.class_schedule.domain.model.Lesson
+import ru.bogatyreva.class_schedule.domain.repository.ScheduleRepository
 import ru.bogatyreva.class_schedule.utils.isSameDay
 import java.time.Duration
 import java.time.Instant

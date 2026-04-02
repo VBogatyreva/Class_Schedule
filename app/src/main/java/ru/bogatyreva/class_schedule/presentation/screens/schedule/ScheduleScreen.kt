@@ -1,4 +1,4 @@
-package ru.bogatyreva.class_schedule.presentation.screens
+package ru.bogatyreva.class_schedule.presentation.screens.schedule
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -53,9 +53,9 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ru.bogatyreva.class_schedule.R
-import ru.bogatyreva.class_schedule.domain.Lesson
-import ru.bogatyreva.class_schedule.domain.LessonStatus
-import ru.bogatyreva.class_schedule.domain.LessonType
+import ru.bogatyreva.class_schedule.domain.model.Lesson
+import ru.bogatyreva.class_schedule.domain.model.LessonStatus
+import ru.bogatyreva.class_schedule.domain.model.LessonType
 import ru.bogatyreva.class_schedule.presentation.ui.theme.BlueScan
 import ru.bogatyreva.class_schedule.presentation.ui.theme.BlueSelected
 import ru.bogatyreva.class_schedule.presentation.ui.theme.BlueToday
@@ -84,7 +84,9 @@ import ru.bogatyreva.class_schedule.presentation.ui.theme.WeekdaysText
 import ru.bogatyreva.class_schedule.presentation.ui.theme.WeekendsText
 import ru.bogatyreva.class_schedule.presentation.ui.theme.White
 import ru.bogatyreva.class_schedule.utils.isSameDay
+import java.time.Instant
 import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -92,7 +94,8 @@ import java.util.Locale
 fun ScheduleScreen(
     viewModel: ScheduleViewModel = viewModel(),
     onQrCodeClick: () -> Unit = {},
-    onProfileClick: () -> Unit = {}
+    onProfileClick: () -> Unit = {},
+    onLessonClick: (Int) -> Unit = {}
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val calendarDates by viewModel.calendarDates.collectAsStateWithLifecycle()
@@ -605,7 +608,13 @@ fun ScheduleScreen(
                         verticalArrangement = Arrangement.spacedBy(4.dp) // Gap 4px между элементами
                     ) {
                         itemsIndexed(state.lessons) { index, lesson ->
-                            LessonCard(lesson = lesson)
+                            LessonCard(
+                                lesson = lesson,
+                                onClick = {
+                                    // Переход к деталям урока
+                                    onLessonClick(lesson.id)
+                                }
+                            )
 
                             if (index < state.lessons.size - 1) {
                                 val nextLesson = state.lessons[index + 1]
@@ -779,21 +788,25 @@ fun ProfileTab(
 }
 
 // Форматирование месяца и года
-fun formatMonthYear(date: java.time.Instant): String {
+fun formatMonthYear(date: Instant): String {
     val localDate = date.atZone(ZoneId.systemDefault()).toLocalDate()
-    val formatter = java.time.format.DateTimeFormatter.ofPattern("LLLL yyyy", Locale("ru"))
+    val formatter = DateTimeFormatter.ofPattern("LLLL yyyy", Locale("ru"))
     return localDate.format(formatter).replaceFirstChar {
         if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString()
     }
 }
 
 @Composable
-fun LessonCard(lesson: Lesson) {
+fun LessonCard(
+    lesson: Lesson,
+    onClick: () -> Unit = {}
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .width(358.dp)  // Fixed width 358px
-            .padding(horizontal = 16.dp), // Отступы от краев 16px
+            .padding(horizontal = 16.dp) // Отступы от краев 16px
+            .clickable { onClick() },
         shape = RoundedCornerShape(20.dp), // Radius 20px
         colors = CardDefaults.cardColors(
             containerColor = LessonCardColor,
@@ -858,9 +871,6 @@ fun LessonCard(lesson: Lesson) {
                 Box(
                     modifier = Modifier
                         .size(width = 8.dp, height = 22.dp)
-                        .clickable {
-                            // TODO: Перейти к деталям занятия
-                        }
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_chevron_right),
