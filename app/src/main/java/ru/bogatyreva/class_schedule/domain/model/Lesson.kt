@@ -1,8 +1,6 @@
-package ru.bogatyreva.class_schedule.domain
+package ru.bogatyreva.class_schedule.domain.model
 
-import androidx.compose.ui.graphics.Color.Companion.Transparent
-import ru.bogatyreva.class_schedule.presentation.ui.theme.Orange
-import ru.bogatyreva.class_schedule.presentation.ui.theme.Red
+import java.time.Duration
 import java.time.Instant
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -20,7 +18,9 @@ data class Lesson (
     val status: LessonStatus = LessonStatus.NORMAL,   // Статус занятия
     val isOnline: Boolean = false,                    // Онлайн или офлайн
     val substitutionTeacher: String? = null,          // Преподаватель для замены
-    val nextLessonStartTime: String? = null           // Время начала следующего занятия (для расчета перерыва)
+    val nextLessonStartTime: String? = null,           // Время начала следующего занятия (для расчета перерыва)
+    val lessonMaterials: List<LessonMaterial> = emptyList(),  // Материалы к уроку
+    val assignment: Assignment? = null                       // Задание к уроку
 ) {
 
     // Отображаемое название типа занятия
@@ -39,14 +39,6 @@ data class Lesson (
             LessonStatus.CANCELLED -> "отменено"
             LessonStatus.SUBSTITUTION -> "замена"
             LessonStatus.NORMAL -> null
-        }
-
-    // Цвет статуса
-    val statusColor: androidx.compose.ui.graphics.Color
-        get() = when (status) {
-            LessonStatus.CANCELLED -> Red
-            LessonStatus.SUBSTITUTION -> Orange
-            LessonStatus.NORMAL -> Transparent
         }
 
     // Отображаемая аудитория
@@ -81,7 +73,7 @@ data class Lesson (
                 val currentEnd = LocalTime.parse(endTime, formatter)
                 val nextStart = LocalTime.parse(nextLessonStartTime, formatter)
 
-                val minutes = java.time.Duration.between(currentEnd, nextStart).toMinutes()
+                val minutes = Duration.between(currentEnd, nextStart).toMinutes()
                 if (minutes > 0) "$minutes минут" else null
             } catch (e: Exception) {
                 null

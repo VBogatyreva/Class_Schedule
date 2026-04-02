@@ -1,6 +1,7 @@
 package ru.bogatyreva.class_schedule.domain
 
 import kotlinx.coroutines.flow.Flow
+import ru.bogatyreva.class_schedule.domain.model.Lesson
 import java.time.Instant
 
 // для получения списка уроков на выбранную дату

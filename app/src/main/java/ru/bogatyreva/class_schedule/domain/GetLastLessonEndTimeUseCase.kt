@@ -1,5 +1,6 @@
 package ru.bogatyreva.class_schedule.domain
 
+import ru.bogatyreva.class_schedule.domain.model.Lesson
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
