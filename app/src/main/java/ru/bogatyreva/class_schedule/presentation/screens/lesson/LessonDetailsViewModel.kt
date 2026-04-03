@@ -8,14 +8,14 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.bogatyreva.class_schedule.domain.model.Assignment
 import ru.bogatyreva.class_schedule.domain.model.AttendanceStatus
-import ru.bogatyreva.class_schedule.domain.usecase.GetLessonDetailsUseCase
 import ru.bogatyreva.class_schedule.domain.model.Lesson
 import ru.bogatyreva.class_schedule.domain.model.LessonMaterial
-import ru.bogatyreva.class_schedule.domain.usecase.MarkAttendanceUseCase
-import ru.bogatyreva.class_schedule.domain.repository.ScheduleRepository
-import ru.bogatyreva.class_schedule.domain.usecase.SubmitAssignmentUseCase
 import ru.bogatyreva.class_schedule.domain.model.SubmittedFile
 import ru.bogatyreva.class_schedule.domain.model.SubmittedMaterial
+import ru.bogatyreva.class_schedule.domain.repository.ScheduleRepository
+import ru.bogatyreva.class_schedule.domain.usecase.GetLessonDetailsUseCase
+import ru.bogatyreva.class_schedule.domain.usecase.MarkAttendanceUseCase
+import ru.bogatyreva.class_schedule.domain.usecase.SubmitAssignmentUseCase
 
 class LessonDetailsViewModel(
     private val repository: ScheduleRepository
@@ -183,8 +183,12 @@ class LessonDetailsViewModel(
 
     private fun openOnlineLesson() {
         val lesson = _state.value.lesson
-        if (lesson?.isOnline == true) {
-            // TODO: Открыть ссылку на онлайн-занятие
+        val link = lesson?.onlineLink
+        if (lesson?.isOnline == true && !link.isNullOrBlank()) {
+            // Открыть ссылку в браузере
+            // Пока просто логируем или сохраняем в state
+            _state.update { it.copy(message = "Открыть: $link") }
+            // TODO: Реализовать открытие ссылки
         }
     }
 

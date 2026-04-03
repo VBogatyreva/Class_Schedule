@@ -56,6 +56,7 @@ import ru.bogatyreva.class_schedule.R
 import ru.bogatyreva.class_schedule.domain.model.Lesson
 import ru.bogatyreva.class_schedule.domain.model.LessonStatus
 import ru.bogatyreva.class_schedule.domain.model.LessonType
+import ru.bogatyreva.class_schedule.presentation.ui.theme.Black
 import ru.bogatyreva.class_schedule.presentation.ui.theme.BlueScan
 import ru.bogatyreva.class_schedule.presentation.ui.theme.BlueSelected
 import ru.bogatyreva.class_schedule.presentation.ui.theme.BlueToday
@@ -80,6 +81,7 @@ import ru.bogatyreva.class_schedule.presentation.ui.theme.TagStatusSubstitution
 import ru.bogatyreva.class_schedule.presentation.ui.theme.TeacherTextColor
 import ru.bogatyreva.class_schedule.presentation.ui.theme.TimeLessonTextColor
 import ru.bogatyreva.class_schedule.presentation.ui.theme.TitleText
+import ru.bogatyreva.class_schedule.presentation.ui.theme.Transparent
 import ru.bogatyreva.class_schedule.presentation.ui.theme.WeekdaysText
 import ru.bogatyreva.class_schedule.presentation.ui.theme.WeekendsText
 import ru.bogatyreva.class_schedule.presentation.ui.theme.White
@@ -112,75 +114,6 @@ fun ScheduleScreen(
     // Флаг для предотвращения циклической прокрутки - на будущее для бесконечной прокрутки календаря
     var isProgrammaticScroll by remember { mutableStateOf(false) }
 
-
-//    // Отслеживаем прокрутку для понедельного переключения
-//    LaunchedEffect(listState) {
-//        snapshotFlow { listState.firstVisibleItemIndex }
-//            .distinctUntilChanged()
-//            .filter { !isProgrammaticScroll }
-//            .collect { index ->
-//                val totalItems = calendarDates.size
-//
-//                // Определяем направление прокрутки
-//                val isMovingForward = index > lastPosition
-//
-//                // Если прокрутили к началу (первые 7 дней) - загружаем предыдущую неделю
-//                if (index < 7 && !isMovingForward) {
-//                    viewModel.processCommand(ScheduleCommands.PreviousWeek)
-//                }
-//                // Если прокрутили к концу (последние 7 дней) - загружаем следующую неделю
-//                else if (index > totalItems - 8 && isMovingForward) {
-//                    viewModel.processCommand(ScheduleCommands.NextWeek)
-//                }
-//
-//                lastPosition = index
-//            }
-//    }
-//
-//    // При загрузке новых дат прокручиваем к центру (текущая неделя)
-//    LaunchedEffect(calendarDates) {
-//        if (calendarDates.isNotEmpty()) {
-//            // Прокручиваем к центру (индекс 14, где находится текущая неделя)
-//            isProgrammaticScroll = true
-//            listState.scrollToItem(14)
-//            isProgrammaticScroll = false
-//        }
-//    }
-//
-//    // Прокручиваем к выбранной дате
-//    LaunchedEffect(state.selectedDate) {
-//        if (calendarDates.isNotEmpty()) {
-//            val selectedIndex = calendarDates.indexOfFirst { date ->
-//                isSameDay(date, state.selectedDate)
-//            }
-//            if (selectedIndex >= 0) {
-//                isProgrammaticScroll = true
-//                listState.animateScrollToItem(selectedIndex)
-//                isProgrammaticScroll = false
-//            }
-//        }
-//    }
-
-
-    //    // При загрузке новых дат без прокручивания на понедельник
-//    LaunchedEffect(calendarDates) {
-//        if (calendarDates.isNotEmpty()) {
-//            val targetDate = if (state.selectedDate != null) state.selectedDate else Instant.now()
-//            val localDate = targetDate.atZone(ZoneId.systemDefault()).toLocalDate()
-//            val monday = localDate.minusDays((localDate.dayOfWeek.value - 1).toLong())
-//            val mondayInstant = monday.atStartOfDay(ZoneId.systemDefault()).toInstant()
-//
-//            val mondayIndex = calendarDates.indexOfFirst { date ->
-//                isSameDay(date, mondayInstant)
-//            }
-//
-//            if (mondayIndex >= 0) {
-//                isProgrammaticScroll = true
-//                listState.scrollToItem(mondayIndex)
-//                isProgrammaticScroll = false
-//            }
-//        }
-//    }
 
     // Прокручиваем к выбранной дате - но в начало ставим понедельник
     LaunchedEffect(state.selectedDate) {
@@ -221,7 +154,7 @@ fun ScheduleScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(44.dp)
-                            .padding(start = 16.dp) // Явный отступ слева 16px
+                            .padding(start = 16.dp)
                     )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -231,7 +164,7 @@ fun ScheduleScreen(
         },
 
         bottomBar = {
-            // Нижняя панель - Navigation Menu 75
+            // Нижняя панель
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -239,12 +172,12 @@ fun ScheduleScreen(
                     .background(LightBg)
                     .border(
                         width = 1.dp,
-                        color = Color.Black.copy(alpha = 0.12f), // Черный с 12% прозрачности
+                        color = Color.Black.copy(alpha = 0.12f),
                         shape = RoundedCornerShape(topStart = 0.dp, topEnd = 0.dp)
                     )
                     .padding(horizontal = 16.dp)
             ) {
-                // Расписание (слева)
+                // Расписание
                 Box(
                     modifier = Modifier
                         .align(Alignment.TopStart)
@@ -259,7 +192,7 @@ fun ScheduleScreen(
                     )
                 }
 
-                // Профиль (справа)
+                // Профиль
                 Box(
                     modifier = Modifier
                         .align(Alignment.TopEnd)
@@ -274,7 +207,7 @@ fun ScheduleScreen(
                     )
                 }
 
-                // Кнопка Scan (по центру)
+                // Кнопка Scan
                 Box(
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
@@ -297,22 +230,20 @@ fun ScheduleScreen(
                 .padding(paddingValues)
                 .background(White)
         ) {
-
-            // КНОПКА "СЕГОДНЯ" - появляется только когда выбран не сегодняшний день
             Row(
                 modifier = Modifier
-                    .fillMaxWidth() // Занять всю ширину (390px)
-                    .height(48.dp) // Высота Hug 48px
+                    .fillMaxWidth()
+                    .height(48.dp)
                     .padding(
                         top = 4.dp,
                         bottom = 4.dp,
-                        start = 16.dp, // Left padding 16px
-                        end = 12.dp    // Right padding 12px
+                        start = 16.dp,
+                        end = 12.dp
                     ),
-                horizontalArrangement = Arrangement.SpaceBetween, // Justify space-between
+                horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Кнопка месяца "Апрель 2026"
+                // Март 2026
                 Box(
                     modifier = Modifier
                         .clip(RoundedCornerShape(100.dp))
@@ -334,7 +265,7 @@ fun ScheduleScreen(
                     )
                 }
 
-                // Правая часть всегда одинакового размера
+                // СЕГОДНЯ - появляется только когда выбран не сегодняшний день
                 Box(
                     modifier = Modifier
                         .height(40.dp)
@@ -361,10 +292,10 @@ fun ScheduleScreen(
                                         bottom = 10.dp,
                                         end = 4.dp
                                     ),
-                                horizontalArrangement = Arrangement.spacedBy(8.dp), // Gap 8px
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                // Текст "Сегодня"
+                                // Текст Сегодня
                                 Text(
                                     text = "Сегодня",
                                     style = MaterialTheme.typography.labelLarge,
@@ -381,21 +312,22 @@ fun ScheduleScreen(
                                     modifier = Modifier.size(
                                         4.dp,
                                         8.dp
-                                    ) // Контейнер 18x18px для иконки
+                                    )
                                 )
                             }
                         }
                     }
-                    // Если кнопки нет, Box остается пустым, но с теми же размерами - тогда элементы на экране не прыгают вверх
+                    // Если кнопки нет, Box остается пустым, но с теми же размерами
+                    // тогда элементы на экране не прыгают вверх
                 }
             }
 
-            // Календарь - теперь каждый день включает и день недели, и число
+            // Календарь
             LazyRow(
                 state = listState,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(96.dp), // Фиксированная высота для календаря
+                    .height(96.dp),
                 horizontalArrangement = Arrangement.spacedBy(0.dp),
                 contentPadding = PaddingValues(horizontal = 16.dp),
                 verticalAlignment = Alignment.CenterVertically
@@ -415,11 +347,11 @@ fun ScheduleScreen(
                     }
                     val isSelected = isSameDay(date, state.selectedDate)
 
-                    //                    // для индикации уроков, т.к. метод suspend вызываем LaunchedEffect
-//                    var hasLessons by remember { mutableStateOf(false) }
-//                    LaunchedEffect(date) {
-//                        hasLessons = viewModel.checkIfDateHasLessons(date)
-//                    }
+                    // для индикации уроков, т.к. метод suspend вызываем LaunchedEffect
+                    var hasLessons by remember { mutableStateOf(false) }
+                    LaunchedEffect(date) {
+                        hasLessons = viewModel.checkIfDateHasLessons(date)
+                    }
 
                     // Определяем цвет для выходных
                     val isWeekend = localDate.dayOfWeek.value == 6 || localDate.dayOfWeek.value == 7
@@ -428,18 +360,18 @@ fun ScheduleScreen(
                     val dayOfWeekColor = when {
                         isWeekend && !isSelected -> WeekendsText
                         isWeekend && isSelected -> WeekendsText
-                        else -> WeekdaysText //  для будних дней
+                        else -> WeekdaysText
                     }
 
                     // Цвет для текста числа
                     val numberTextColor = when {
                         isSelected -> White // Белый для выделенной даты
-                        isWeekend -> WeekendsText // для выходных (невыделенных)
+                        isWeekend -> WeekendsText // для невыделенных выходных
                         else -> WeekdaysText // для будних дней
                     }
 
                     // Фон для числа
-                    val numberBackgroundColor = if (isSelected) BlueSelected else Color.Transparent
+                    val numberBackgroundColor = if (isSelected) BlueSelected else Transparent
 
 
                     Column(
@@ -478,18 +410,18 @@ fun ScheduleScreen(
                             )
                         }
 
-//                        // Индикатор наличия занятий
-//                        if (!isSelected) {
-//                            Spacer(modifier = Modifier.height(4.dp))
-//                            Box(
-//                                modifier = Modifier
-//                                    .size(4.dp)
-//                                    .clip(CircleShape)
-//                                    .background(if (hasLessons) Color(0xFF2196F3) else Color.Transparent)
-//                            )
-//                        } else {
-//                            Spacer(modifier = Modifier.height(4.dp))
-//                        }
+                        // Индикатор наличия занятий
+                        if (!isSelected) {
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Box(
+                                modifier = Modifier
+                                    .size(4.dp)
+                                    .clip(CircleShape)
+                                    .background(if (hasLessons) Color(0xFF2196F3) else Color.Transparent)
+                            )
+                        } else {
+                            Spacer(modifier = Modifier.height(4.dp))
+                        }
                     }
                 }
             }
@@ -553,26 +485,26 @@ fun ScheduleScreen(
                                 modifier = Modifier
                                     .size(50.dp)
                                     .clip(CircleShape)
-                                    .background(SunIconBackground.copy(alpha = 0.15f)) // #0088FF с 15% прозрачности
+                                    .background(SunIconBackground.copy(alpha = 0.15f))
                             ) {
                                 Icon(
                                     painter = painterResource(id = R.drawable.ic_sun),
                                     contentDescription = null,
-                                    tint = SunIconBackground, // #0088FF
+                                    tint = SunIconBackground,
                                     modifier = Modifier
-                                        .size(33.dp) // Размер иконки 33x33px
+                                        .size(33.dp)
                                         .align(Alignment.Center)
                                 )
                             }
 
-                            // Отступ от иконки до текста "Выходной" 16px
+                            // Отступ от иконки до текста Выходной 16px
                             Spacer(modifier = Modifier.height(16.dp))
 
-                            // Текст "Выходной"
+                            // Текст Выходной
                             Text(
                                 text = "Выходной",
                                 style = MaterialTheme.typography.titleLarge,
-                                color = Color.Black,
+                                color = Black,
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(28.dp)
@@ -580,7 +512,7 @@ fun ScheduleScreen(
                                 textAlign = TextAlign.Center
                             )
 
-                            // Отступ от "Выходной" до описания 8px
+                            // Отступ от Выходной до описания 8px
                             Spacer(modifier = Modifier.height(8.dp))
 
                             // Текст описания
@@ -605,7 +537,7 @@ fun ScheduleScreen(
                     LazyColumn(
                         modifier = Modifier
                             .weight(1f),
-                        verticalArrangement = Arrangement.spacedBy(4.dp) // Gap 4px между элементами
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
                         itemsIndexed(state.lessons) { index, lesson ->
                             LessonCard(
@@ -622,7 +554,7 @@ fun ScheduleScreen(
 
                                 if (breakDuration != null) {
 
-                                    Spacer(modifier = Modifier.height(4.dp)) // Отступ 4px перед перерывом
+                                    Spacer(modifier = Modifier.height(4.dp))
 
                                     BreakIndicator(
                                         startTime = lesson.endTime,
@@ -630,11 +562,10 @@ fun ScheduleScreen(
                                         duration = breakDuration
                                     )
 
-                                    Spacer(modifier = Modifier.height(4.dp)) // Отступ 4px после перерыва
+                                    Spacer(modifier = Modifier.height(4.dp))
                                 }
                             }
                         }
-
                         item {
                             Spacer(modifier = Modifier.height(16.dp))
                         }
@@ -645,7 +576,7 @@ fun ScheduleScreen(
     }
 }
 
-// Компонент Home Tab (активный) - РАСПИСАНИЕ (слева)
+// Компонент Home Tab - РАСПИСАНИЕ
 @Composable
 fun HomeTab(
     modifier: Modifier = Modifier,
@@ -665,7 +596,7 @@ fun HomeTab(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
             modifier = Modifier
-                .padding(top = 8.dp, bottom = 8.dp) // Padding top/bottom 8px
+                .padding(top = 8.dp, bottom = 8.dp)
         ) {
             // Calendar Icon
             Box(
@@ -677,13 +608,13 @@ fun HomeTab(
                     contentDescription = "Расписание",
                     tint = iconColor,
                     modifier = Modifier
-                        .size(21.dp) // Vector size 21x21px
+                        .size(21.dp)
                         .align(Alignment.Center)
-                        .offset(x = 1.5.dp, y = 1.5.dp) // Position at 1.5,1.5
+                        .offset(x = 1.5.dp, y = 1.5.dp)
                 )
             }
 
-            Spacer(modifier = Modifier.height(4.dp)) // Gap 4px между иконкой и текстом
+            Spacer(modifier = Modifier.height(4.dp))
 
             // Text Label
             Text(
@@ -693,15 +624,14 @@ fun HomeTab(
                 color = textColor,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(16.dp), // Height 16px
+                    .height(16.dp),
                 textAlign = TextAlign.Center
             )
         }
     }
 }
 
-
-// Компонент Center Tab (активный с круглой кнопкой) - QR
+// Компонент Center Tab - QR
 @Composable
 fun CenterTab(
     modifier: Modifier = Modifier,
@@ -714,11 +644,11 @@ fun CenterTab(
         // Круглая кнопка сканирования
         Box(
             modifier = Modifier
-                .size(52.dp) // Fixed size 52px
+                .size(52.dp)
                 .offset(y = (-9).dp) // Поднимаем вверх, чтобы выступала
                 .clip(CircleShape)
-                .background(ScanBackground) // #D9EDFF фон
-                .border(4.dp, LightBg, CircleShape) // Border 4px #FAFAFA
+                .background(ScanBackground)
+                .border(4.dp, LightBg, CircleShape)
                 .clickable { onQrCodeClick() },
             contentAlignment = Alignment.Center
         ) {
@@ -727,13 +657,13 @@ fun CenterTab(
                 painter = painterResource(id = R.drawable.ic_scan),
                 contentDescription = "Сканировать",
                 tint = BlueScan,
-                modifier = Modifier.size(23.4.dp) // 23.4x23.4px
+                modifier = Modifier.size(23.4.dp)
             )
         }
     }
 }
 
-// Компонент Profile Tab (неактивный) - ПРОФИЛЬ
+// Компонент Profile Tab - ПРОФИЛЬ
 @Composable
 fun ProfileTab(
     modifier: Modifier = Modifier,
@@ -752,12 +682,12 @@ fun ProfileTab(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
             modifier = Modifier
-                .padding(top = 8.dp, bottom = 8.dp) // Padding top/bottom 8px
+                .padding(top = 8.dp, bottom = 8.dp)
         ) {
             // Profile Icon
             Box(
                 modifier = Modifier
-                    .size(24.dp) // Icon size 24x24px
+                    .size(24.dp)
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_profile),
@@ -770,7 +700,7 @@ fun ProfileTab(
                 )
             }
 
-            Spacer(modifier = Modifier.height(4.dp)) // Gap 4px между иконкой и текстом
+            Spacer(modifier = Modifier.height(4.dp))
 
             // Text Label
             Text(
@@ -779,8 +709,8 @@ fun ProfileTab(
                 fontWeight = FontWeight.Medium,
                 color = textColor,
                 modifier = Modifier
-                    .width(74.dp) // Width 74px
-                    .height(16.dp), // Height 16px
+                    .width(74.dp)
+                    .height(16.dp),
                 textAlign = TextAlign.Center
             )
         }
@@ -801,13 +731,14 @@ fun LessonCard(
     lesson: Lesson,
     onClick: () -> Unit = {}
 ) {
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .width(358.dp)  // Fixed width 358px
-            .padding(horizontal = 16.dp) // Отступы от краев 16px
+            .width(358.dp)
+            .padding(horizontal = 16.dp)
             .clickable { onClick() },
-        shape = RoundedCornerShape(20.dp), // Radius 20px
+        shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(
             containerColor = LessonCardColor,
         ),
@@ -826,30 +757,29 @@ fun LessonCard(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(22.dp), // Hug height 22px
+                    .height(22.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 // Левая часть - теги
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(4.dp), // Gap 4px между тегами
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     // Тег с номером пары
                     TagNumber(number = lesson.pairNumber.toString())
 
-                    // Тег с типом занятия (лекция/семинар)
+                    // Тег с типом занятия (лекция/семинар/зачет/экзамен)
                     when (lesson.lessonType) {
                         LessonType.LECTURE,
                         LessonType.SEMINAR,
                         LessonType.EXAM,
                         LessonType.TEST -> {
                             TagLessonType(
-                                type = lesson.lessonTypeDisplay, // Используем готовое отображение
+                                type = lesson.lessonTypeDisplay,
                                 lessonType = lesson.lessonType
                             )
                         }
-
                         else -> {} // Другие типы не показываем
                     }
 
@@ -858,16 +788,14 @@ fun LessonCard(
                         LessonStatus.SUBSTITUTION -> {
                             TagSubstitution()
                         }
-
                         LessonStatus.CANCELLED -> {
                             TagCancelled()
                         }
-
                         else -> {} // NORMAL - ничего не показываем
                     }
                 }
 
-                // Правая часть - иконка перехода (drill-in)
+                // Правая часть - иконка перехода
                 Box(
                     modifier = Modifier
                         .size(width = 8.dp, height = 22.dp)
@@ -883,13 +811,13 @@ fun LessonCard(
                 }
             }
 
-            Spacer(modifier = Modifier.height(8.dp)) // Gap 8px
+            Spacer(modifier = Modifier.height(8.dp))
 
             // Время и аудитория
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(20.dp), // Height 20px
+                    .height(20.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -912,21 +840,20 @@ fun LessonCard(
                 )
             }
 
-            Spacer(modifier = Modifier.height(6.dp)) // Gap 6px
+            Spacer(modifier = Modifier.height(6.dp))
 
             // Название дисциплины
             Text(
                 text = lesson.discipline,
                 style = MaterialTheme.typography.bodyLarge,
                 color = SubjectText,
-                maxLines = 1,
+                maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(24.dp) // Fixed height 24px
             )
 
-            Spacer(modifier = Modifier.height(6.dp)) // Gap 6px
+            Spacer(modifier = Modifier.height(6.dp))
 
             // Преподаватель
             val hasOriginalTeacher = !lesson.originalTeacher.isNullOrBlank()
@@ -965,7 +892,7 @@ fun LessonCard(
 fun TagNumber(number: String) {
     Box(
         modifier = Modifier
-            .clip(RoundedCornerShape(1000.dp)) // Radius 1000px (полностью скругленный)
+            .clip(RoundedCornerShape(1000.dp))
             .background(TagNumberBackground)
             .padding(
                 top = 3.dp,
@@ -977,53 +904,26 @@ fun TagNumber(number: String) {
         Text(
             text = number,
             style = MaterialTheme.typography.labelSmall,
-            color = SubjectText, // Черный текст
+            color = SubjectText,
             modifier = Modifier
-                .height(16.dp) // Height 16px
+                .height(16.dp)
                 .align(Alignment.Center)
         )
     }
 }
 
-//// Компонент для тега с типом занятия (лекция/семинар)
-//@Composable
-//fun TagLessonType(type: String, isLecture: Boolean) {
-//    Box(
-//        modifier = Modifier
-//            .clip(RoundedCornerShape(1000.dp))
-//            .background(
-//                if (isLecture) TagLessonTypeLecture else TagLessonTypeSeminar
-//            )
-//            .padding(
-//                top = 3.dp,
-//                bottom = 3.dp,
-//                start = 11.dp,
-//                end = 11.dp
-//            )
-//    ) {
-//        Text(
-//            text = type,
-//            style = MaterialTheme.typography.labelSmall,
-//            color = Color.White,
-//            modifier = Modifier
-//                .height(16.dp) // Height 16px
-//                .align(Alignment.Center)
-//        )
-//    }
-//}
-
 // Компонент для тега с типом занятия
 @Composable
 fun TagLessonType(
     type: String,
-    lessonType: LessonType  // Передаем весь enum вместо Boolean
+    lessonType: LessonType
 ) {
     val backgroundColor = when (lessonType) {
         LessonType.LECTURE -> TagLessonTypeLecture
         LessonType.SEMINAR -> TagLessonTypeSeminar
         LessonType.EXAM -> TagLessonTypeExam
         LessonType.TEST -> TagLessonTypeTest
-        else -> Color.Gray // fallback
+        else -> Color.Gray
     }
 
     val displayText = when (lessonType) {
@@ -1056,7 +956,7 @@ fun TagLessonType(
     }
 }
 
-// Компонент для тега "замена"
+// Компонент для тега замена
 @Composable
 fun TagSubstitution(originalTeacher: String? = null) {
     Box(
@@ -1081,7 +981,7 @@ fun TagSubstitution(originalTeacher: String? = null) {
     }
 }
 
-// Компонент для тега "отменено"
+// Компонент для тега отменено
 @Composable
 fun TagCancelled() {
     Box(
@@ -1106,7 +1006,6 @@ fun TagCancelled() {
     }
 }
 
-
 @Composable
 fun BreakIndicator(
     startTime: String,
@@ -1118,7 +1017,7 @@ fun BreakIndicator(
         modifier = modifier
             .fillMaxWidth()
             .height(22.dp)
-            .padding(horizontal = 16.dp) // Отступы от краев 16px
+            .padding(horizontal = 16.dp)
             .padding(
                 top = 3.dp,
                 bottom = 3.dp
@@ -1126,7 +1025,7 @@ fun BreakIndicator(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Левый текст - "перерыв X минут"
+        // текст - "перерыв X минут"
         Text(
             text = "перерыв $duration",
             style = MaterialTheme.typography.labelSmall,
@@ -1134,7 +1033,7 @@ fun BreakIndicator(
             modifier = Modifier.height(16.dp)
         )
 
-        // Правый текст - интервал времени "11:45 – 12:00"
+        // текст - интервал времени "11:45 – 12:00"
         Text(
             text = "$startTime – $endTime",
             style = MaterialTheme.typography.labelSmall,
@@ -1145,7 +1044,7 @@ fun BreakIndicator(
     }
 }
 
-// Функция для склонения слова "занятия" в зависимости от количества
+// Функция для склонения слова "занятия" в зависимости от количества уроков
 fun getLessonsCountText(count: Int): String {
     return when {
         count % 10 == 1 && count % 100 != 11 -> "$count занятие"        // 1 занятие, 21 занятие, 101 занятие

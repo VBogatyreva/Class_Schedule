@@ -11,17 +11,34 @@ data class Lesson (
     val startTime: String,                            // "8:00" - для UI
     val endTime: String,                              // "8:45" - для UI
     val discipline: String,                           // "Философия"
-    val audience: String,                             // "209"
+    val audience: String? = null,                     // "209" или Онлайн
     val originalTeacher: String,                      // "Иванова М.И."
     val date: Instant,                                // Дата занятия
     val lessonType: LessonType = LessonType.UNKNOWN,  // Тип занятия
     val status: LessonStatus = LessonStatus.NORMAL,   // Статус занятия
     val isOnline: Boolean = false,                    // Онлайн или офлайн
+    val onlineLink: String? = null,                   // Ссылка на онлайн-занятие
     val substitutionTeacher: String? = null,          // Преподаватель для замены
     val nextLessonStartTime: String? = null,           // Время начала следующего занятия (для расчета перерыва)
     val lessonMaterials: List<LessonMaterial> = emptyList(),  // Материалы к уроку
     val assignment: Assignment? = null                       // Задание к уроку
 ) {
+
+    // Отображаемая аудитория
+    val audienceDisplay: String
+        get() = when {
+            isOnline -> "Онлайн"
+            audience != null -> "ауд. $audience"
+            else -> "Не указано"
+        }
+
+    // Проверка, есть ли место проведения в аудитории
+    val hasAudience: Boolean
+        get() = !isOnline && audience != null && audience.isNotBlank()
+
+    // Проверка, есть ли онлайн-ссылка
+    val hasOnlineLink: Boolean
+        get() = isOnline && !onlineLink.isNullOrBlank()
 
     // Отображаемое название типа занятия
     val lessonTypeDisplay: String
@@ -40,10 +57,6 @@ data class Lesson (
             LessonStatus.SUBSTITUTION -> "замена"
             LessonStatus.NORMAL -> null
         }
-
-    // Отображаемая аудитория
-    val audienceDisplay: String
-        get() = if (isOnline) "Онлайн" else "ауд. $audience"
 
     // Форматированное время занятия
     val formattedTime: String
@@ -101,7 +114,7 @@ data class Lesson (
     // Проверяем, есть ли перерыв после этого занятия
     val hasBreak: Boolean
         get() = !getBreakDuration().isNullOrBlank()
-    }
+}
 
 enum class LessonType {
     LECTURE,        // лекция

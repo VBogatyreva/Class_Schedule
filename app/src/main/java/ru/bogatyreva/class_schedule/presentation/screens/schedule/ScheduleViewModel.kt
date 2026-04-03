@@ -6,18 +6,13 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import ru.bogatyreva.class_schedule.domain.usecase.CheckIsSelectedUseCase
-import ru.bogatyreva.class_schedule.domain.usecase.CheckIsTodayUseCase
+import ru.bogatyreva.class_schedule.domain.model.Lesson
+import ru.bogatyreva.class_schedule.domain.repository.ScheduleRepository
 import ru.bogatyreva.class_schedule.domain.usecase.GetCalendarDatesUseCase
-import ru.bogatyreva.class_schedule.domain.usecase.GetDayNumberUseCase
-import ru.bogatyreva.class_schedule.domain.usecase.GetDayOfWeekUseCase
 import ru.bogatyreva.class_schedule.domain.usecase.GetLastLessonEndTimeUseCase
 import ru.bogatyreva.class_schedule.domain.usecase.GetLessonsCountForDateUseCase
 import ru.bogatyreva.class_schedule.domain.usecase.GetLessonsForDateUseCase
-import ru.bogatyreva.class_schedule.domain.usecase.GetMonthYearUseCase
 import ru.bogatyreva.class_schedule.domain.usecase.GetTodayUseCase
-import ru.bogatyreva.class_schedule.domain.model.Lesson
-import ru.bogatyreva.class_schedule.domain.repository.ScheduleRepository
 import ru.bogatyreva.class_schedule.utils.isSameDay
 import java.time.Duration
 import java.time.Instant
@@ -26,18 +21,11 @@ import java.time.ZoneId
 class ScheduleViewModel(
     private val repository: ScheduleRepository
 ) : ViewModel() {
-
-    private val checkIsSelectedUseCase = CheckIsSelectedUseCase(repository)
-    private val checkIsTodayUseCase = CheckIsTodayUseCase(repository)
     private val getCalendarDatesUseCase = GetCalendarDatesUseCase(repository)
-    private val getDayNumberUseCase = GetDayNumberUseCase(repository)
-    private val getDayOfWeekUseCase = GetDayOfWeekUseCase(repository)
     private val getLastLessonEndTimeUseCase = GetLastLessonEndTimeUseCase()
     private val getLessonsCountForDateUseCase = GetLessonsCountForDateUseCase(repository)
     private val getLessonsForDateUseCase = GetLessonsForDateUseCase(repository)
-    private val getMonthYearUseCase = GetMonthYearUseCase(repository)
     private val getTodayUseCase = GetTodayUseCase(repository)
-
 
     private val _state = MutableStateFlow(ScheduleScreenState())
     val state = _state.asStateFlow()
@@ -91,7 +79,6 @@ class ScheduleViewModel(
                     val enrichedLessons = enrichLessonsWithNextStartTime(lessons)
                     // Рассчитываем время окончания последнего занятия
                     val lastLessonEndTime = calculateLastLessonEndTime(enrichedLessons)
-
                     // Загружаем информацию для шапки
                     val lessonsCount = getLessonsCountForDateUseCase(date)
 
@@ -109,7 +96,7 @@ class ScheduleViewModel(
             } catch (e: Exception) {
                 _state.update {
                     it.copy(
-                        error = "Неожиданная ошибка: ${e.message}",
+                        error = "Ошибка: ${e.message}",
                         isLoading = false
                     )
                 }
@@ -131,12 +118,12 @@ class ScheduleViewModel(
         }
     }
 
-    // Расчет времени окончания последнего занятия
+    // Функция для расчета времени окончания последнего занятия
     private fun calculateLastLessonEndTime(lessons: List<Lesson>): String? {
         return getLastLessonEndTimeUseCase(lessons)
     }
 
-    //Загрузка дат для календаря
+    //Функция для загрузки дат для календаря
     private suspend fun loadCalendarDates(centerDate: Instant) {
         try {
             val dates = getCalendarDatesUseCase(centerDate)
@@ -146,15 +133,15 @@ class ScheduleViewModel(
         }
     }
 
-    // Очистка сообщения об ошибке
+    // Функция для очистки сообщения об ошибке
     private fun clearError() {
         _state.update { it.copy(error = null) }
     }
 
-//    // Функция для проверки наличия занятий на дату - для индикации уроков для каждой даты в календаре
-//    suspend fun checkIfDateHasLessons(date: Instant): Boolean {
-//        return getLessonsCountForDateUseCase(date) > 0
-//    }
+    // Функция для проверки наличия занятий на дату - для индикации уроков для каждой даты в календаре
+    suspend fun checkIfDateHasLessons(date: Instant): Boolean {
+        return getLessonsCountForDateUseCase(date) > 0
+    }
 
     // Обработка команд от UI
     fun processCommand(command: ScheduleCommands) {
@@ -185,7 +172,8 @@ class ScheduleViewModel(
 
                 ScheduleCommands.NextMonth -> {
                     val currentCenter = _calendarCenterDate.value ?: _state.value.selectedDate
-                    // ИСПРАВЛЕНО: правильное добавление месяца
+
+                    // добавление месяца в зависимости от количества дней в месяце
                     val localDate = currentCenter.atZone(ZoneId.systemDefault()).toLocalDate()
                     val nextMonth = localDate.plusMonths(1)
                     val newDate = nextMonth.atStartOfDay(ZoneId.systemDefault()).toInstant()
@@ -196,7 +184,8 @@ class ScheduleViewModel(
 
                 ScheduleCommands.PreviousMonth -> {
                     val currentCenter = _calendarCenterDate.value ?: _state.value.selectedDate
-                    // ИСПРАВЛЕНО: правильное вычитание месяца
+
+                    // добавление месяца в зависимости от количества дней в месяце
                     val localDate = currentCenter.atZone(ZoneId.systemDefault()).toLocalDate()
                     val previousMonth = localDate.minusMonths(1)
                     val newDate = previousMonth.atStartOfDay(ZoneId.systemDefault()).toInstant()
@@ -234,7 +223,6 @@ sealed interface ScheduleCommands {
     data object NextMonth : ScheduleCommands
     data object PreviousMonth : ScheduleCommands
     data object ClearError : ScheduleCommands
-
     data object GoToToday : ScheduleCommands
 }
 
