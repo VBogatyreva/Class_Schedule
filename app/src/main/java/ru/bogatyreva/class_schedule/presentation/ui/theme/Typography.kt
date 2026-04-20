@@ -199,3 +199,67 @@ val LessonHeaderTextStyle = TextStyle(
     letterSpacing = 0.25.sp,
     color = Color(0xFF79747E)
 )
+
+// Стили для экранов авторизации
+val WelcomeTitleStyle = TextStyle(
+    fontFamily = Inter,
+    fontWeight = FontWeight.Medium,
+    fontSize = 24.sp,
+    lineHeight = 32.sp,
+    letterSpacing = 0.sp,
+    color = TitleText
+)
+
+val WelcomeSubtitleStyle = TextStyle(
+    fontFamily = Inter,
+    fontWeight = FontWeight.Normal,
+    fontSize = 16.sp,
+    lineHeight = 24.sp,
+    letterSpacing = 0.5.sp,
+    color = SummaryTextColor
+)
+
+val AuthButtonStyle = TextStyle(
+    fontFamily = Inter,
+    fontWeight = FontWeight.Medium,
+    fontSize = 16.sp,
+    lineHeight = 24.sp,
+    letterSpacing = 0.sp,
+    color = Color.White
+)
+
+val AuthLinkStyle = TextStyle(
+    fontFamily = Inter,
+    fontWeight = FontWeight.Medium,
+    fontSize = 14.sp,
+    lineHeight = 20.sp,
+    letterSpacing = 0.sp,
+    color = BlueToday
+)
+
+val InputLabelStyle = TextStyle(
+    fontFamily = Inter,
+    fontWeight = FontWeight.Medium,
+    fontSize = 14.sp,
+    lineHeight = 20.sp,
+    letterSpacing = 0.sp,
+    color = Color(0xFF49454F)
+)
+
+val InputTextStyle = TextStyle(
+    fontFamily = Inter,
+    fontWeight = FontWeight.Normal,
+    fontSize = 16.sp,
+    lineHeight = 24.sp,
+    letterSpacing = 0.5.sp,
+    color = TitleText
+)
+
+val ErrorTextStyle = TextStyle(
+    fontFamily = Inter,
+    fontWeight = FontWeight.Medium,
+    fontSize = 14.sp,
+    lineHeight = 20.sp,
+    letterSpacing = 0.sp,
+    color = Color(0xFFB3261E)
+)

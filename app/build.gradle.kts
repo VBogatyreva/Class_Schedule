@@ -63,6 +63,7 @@ dependencies {
 
     // Flow и ViewModel
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.androidx.compose.foundation.layout)
 
     // Testing
     testImplementation(libs.junit)

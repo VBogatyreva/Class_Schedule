@@ -3,6 +3,7 @@ package ru.bogatyreva.class_schedule.presentation.screens.lesson
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -40,6 +41,7 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -117,7 +119,9 @@ fun LessonDetailsScreen(
                         modifier = Modifier
                             .size(24.dp)
                             .padding(start = 4.dp)
-                            .clickable { onBackPressed() },
+                            .pointerInput(Unit) {
+                                detectTapGestures(onTap = { onBackPressed() })
+                            },
                         tint = TitleText
                     )
                 },
@@ -237,7 +241,9 @@ fun LessonDetailsScreen(
                             .background(
                                 if (selectedTab == LessonDetailsTab.INFO) activeBackgroundColor else inactiveBackgroundColor
                             )
-                            .clickable { selectedTab = LessonDetailsTab.INFO },
+                            .pointerInput(Unit) {
+                                detectTapGestures(onTap = { selectedTab = LessonDetailsTab.INFO })
+                            },
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
@@ -268,7 +274,9 @@ fun LessonDetailsScreen(
                             .background(
                                 if (selectedTab == LessonDetailsTab.MATERIALS) activeBackgroundColor else inactiveBackgroundColor
                             )
-                            .clickable { selectedTab = LessonDetailsTab.MATERIALS },
+                            .pointerInput(Unit) {
+                                detectTapGestures(onTap = { selectedTab = LessonDetailsTab.MATERIALS })
+                            },
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
@@ -300,7 +308,9 @@ fun LessonDetailsScreen(
                             .background(
                                 if (selectedTab == LessonDetailsTab.ASSIGNMENT) activeBackgroundColor else inactiveBackgroundColor
                             )
-                            .clickable { selectedTab = LessonDetailsTab.ASSIGNMENT },
+                            .pointerInput(Unit) {
+                                detectTapGestures(onTap = { selectedTab = LessonDetailsTab.ASSIGNMENT })
+                            },
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
@@ -522,11 +532,11 @@ fun InfoTabContent(
                     Text(
                         text = teacherName,
                         style = TeacherNameTextStyle,
-                        maxLines = 2,
+                        maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier
                             .width(264.dp)
-                            .height(48.dp)
+                            .height(24.dp)
                     )
                 }
             }
@@ -593,7 +603,7 @@ fun InfoTabContent(
                                 style = MaterialTheme.typography.titleMedium.copy(
                                     fontWeight = FontWeight.SemiBold,
                                     letterSpacing = 0.15.sp,
-                                    color = TitleText  // #1D1B20
+                                    color = TitleText
                                 ),
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
@@ -609,8 +619,10 @@ fun InfoTabContent(
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(100.dp))
                                     .background(BlueToday)
-                                    .clickable {
-                                        viewModel.processCommand(LessonDetailsCommands.OpenOnlineLesson)
+                                    .pointerInput(Unit) {
+                                        detectTapGestures(onTap = {
+                                            viewModel.processCommand(LessonDetailsCommands.OpenOnlineLesson)
+                                        })
                                     }
                                     .padding(vertical = 10.dp, horizontal = 16.dp)
                             ) {
@@ -764,7 +776,7 @@ fun InfoTabContent(
 @Composable
 fun MaterialsTabContent(
     lessonMaterials: List<LessonMaterial>,
-    submittedMaterials: List<SubmittedMaterial>,  // не используется
+    submittedMaterials: List<SubmittedMaterial>,
     viewModel: LessonDetailsViewModel
 ) {
     Column(
@@ -777,7 +789,7 @@ fun MaterialsTabContent(
             lessonMaterials.forEachIndexed { index, material ->
 
                 if (index == 0) {
-                    Spacer(modifier = Modifier.height(16.dp))  // 16px сверху первого материала
+                    Spacer(modifier = Modifier.height(16.dp))
                 }
 
                 MaterialItem(
@@ -792,11 +804,11 @@ fun MaterialsTabContent(
                 )
 
                 if (index < lessonMaterials.size - 1) {
-                    Spacer(modifier = Modifier.height(8.dp))  // 8px между материалами
+                    Spacer(modifier = Modifier.height(8.dp))
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))  // 16px снизу последнего материала
+            Spacer(modifier = Modifier.height(16.dp))
         }
 
         // Состояние 2: Нет материалов к занятию
@@ -863,7 +875,9 @@ fun MaterialItem(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick() },
+            .pointerInput(Unit) {
+                detectTapGestures(onTap = { onClick() })
+            },
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = LessonCardColor),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
@@ -1094,14 +1108,16 @@ fun AssignmentTabContent(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable {
-                                val newFile = SubmittedFile(
-                                    id = "file_${System.currentTimeMillis()}",
-                                    fileName = "новый_файл.pdf",
-                                    fileSize = "1.5 MB",
-                                    fileType = "PDF"
-                                )
-                                viewModel.processCommand(LessonDetailsCommands.AddFile(newFile))
+                            .pointerInput(Unit) {
+                                detectTapGestures(onTap = {
+                                    val newFile = SubmittedFile(
+                                        id = "file_${System.currentTimeMillis()}",
+                                        fileName = "новый_файл.pdf",
+                                        fileSize = "1.5 MB",
+                                        fileType = "PDF"
+                                    )
+                                    viewModel.processCommand(LessonDetailsCommands.AddFile(newFile))
+                                })
                             }
                             .padding(vertical = 8.dp),
                         horizontalArrangement = Arrangement.Center,
@@ -1126,8 +1142,10 @@ fun AssignmentTabContent(
                         .height(56.dp)
                         .clip(RoundedCornerShape(100.dp))
                         .background(BlueToday)
-                        .clickable {
-                            viewModel.processCommand(LessonDetailsCommands.SubmitAssignment(""))
+                        .pointerInput(Unit) {
+                            detectTapGestures(onTap = {
+                                viewModel.processCommand(LessonDetailsCommands.SubmitAssignment(""))
+                            })
                         },
                     contentAlignment = Alignment.Center
                 ) {
@@ -1197,14 +1215,16 @@ fun AssignmentTabContent(
                     }
                     .clip(RoundedCornerShape(16.dp))
                     .background(Color.White)
-                    .clickable {
-                        val newFile = SubmittedFile(
-                            id = "file_${System.currentTimeMillis()}",
-                            fileName = "новый_файл.pdf",
-                            fileSize = "1.5 MB",
-                            fileType = "PDF"
-                        )
-                        viewModel.processCommand(LessonDetailsCommands.AddFile(newFile))
+                    .pointerInput(Unit) {
+                        detectTapGestures(onTap = {
+                            val newFile = SubmittedFile(
+                                id = "file_${System.currentTimeMillis()}",
+                                fileName = "новый_файл.pdf",
+                                fileSize = "1.5 MB",
+                                fileType = "PDF"
+                            )
+                            viewModel.processCommand(LessonDetailsCommands.AddFile(newFile))
+                        })
                     }
             ) {
                 Column(
@@ -1331,7 +1351,9 @@ fun SubmittedFileItem(
         Box(
             modifier = Modifier
                 .size(24.dp)
-                .clickable { onDelete() },
+                .pointerInput(Unit) {
+                    detectTapGestures(onTap = { onDelete() })
+                },
             contentAlignment = Alignment.Center
         ) {
             Icon(

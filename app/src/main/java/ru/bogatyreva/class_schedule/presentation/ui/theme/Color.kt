@@ -17,6 +17,7 @@ val Transparent = Color(0x00000000) // #00000000 - прозрачный
 val Red = Color(0xFFFF383C)      // #FF383C
 val Orange = Color(0xFFFF8D28)   // #FF8D28
 val Black = Color(0xFF000000)    // #000000
+val ErrorRed = Color(0xFFE65443)          // Красный для ошибки
 
 // Текстовые цвета
 val TitleText = Color(0xFF1D1B20) // #1D1B20 - цвет для заголовка "Расписание"
@@ -36,6 +37,10 @@ val BlueSelected = Color(0xFF0088FF) // #0088FF - выделенная дата
 val SunIconBackground = Color(0xFF0088FF) // #0088FF - фон на иконку Sun
 val BlueScan = Color(0xFF0088FF)   // #0088FF - цвет кнопки "QR"
 val AddFile = Color(0xFF34C759)   // #34C759 - кнопка "Добавить файл"
+
+val BorderFocusColor = Color(0xFF0088FF)  // для рамки при фокусе
+val BorderUnfocused = Color(0xFFC4C4C7)  //  для рамки без фокуса
+val ShadowColor = Color(0xFF3ED1C7)
 
 // Цвета с прозрачностью (на основе #3C3C43)
 val SummaryTextColor = Color(0xFF3C3C43).copy(alpha = 0.6f) // #3C3C43 с 60% прозрачности для текста количество занятий

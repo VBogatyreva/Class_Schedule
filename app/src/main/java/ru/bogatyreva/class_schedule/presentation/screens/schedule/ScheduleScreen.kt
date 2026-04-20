@@ -2,8 +2,7 @@ package ru.bogatyreva.class_schedule.presentation.screens.schedule
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -43,6 +42,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -97,7 +97,8 @@ fun ScheduleScreen(
     viewModel: ScheduleViewModel = viewModel(),
     onQrCodeClick: () -> Unit = {},
     onProfileClick: () -> Unit = {},
-    onLessonClick: (Int) -> Unit = {}
+    onLessonClick: (Int) -> Unit = {},
+    onLogoutClick: () -> Unit = {}
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val calendarDates by viewModel.calendarDates.collectAsStateWithLifecycle()
@@ -203,7 +204,7 @@ fun ScheduleScreen(
                             .width(146.dp)
                             .height(56.dp),
                         isActive = false,
-                        onProfileClick = onProfileClick
+                        onProfileClick = onLogoutClick
                     )
                 }
 
@@ -277,8 +278,10 @@ fun ScheduleScreen(
                         Box(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(100.dp))
-                                .clickable {
-                                    viewModel.processCommand(ScheduleCommands.GoToToday)
+                                .pointerInput(Unit) {
+                                    detectTapGestures(onTap = {
+                                        viewModel.processCommand(ScheduleCommands.GoToToday)
+                                    })
                                 }
                                 .height(40.dp)
                                 .width(97.dp)
@@ -378,11 +381,10 @@ fun ScheduleScreen(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier
                             .width(dayWidth)
-                            .clickable(
-                                interactionSource = remember { MutableInteractionSource() },
-                                indication = null // Отключаем ripple-эффект на календаре при нажатии на дату
-                            ) {
-                                viewModel.processCommand(ScheduleCommands.SelectDate(date))
+                            .pointerInput(Unit) {
+                                detectTapGestures(onTap = {
+                                    viewModel.processCommand(ScheduleCommands.SelectDate(date))
+                                })
                             }
                     ) {
                         // День недели
@@ -527,8 +529,6 @@ fun ScheduleScreen(
                                 textAlign = TextAlign.Center,
                                 lineHeight = 24.sp
                             )
-
-                            // Отступ снизу 330px
                             Spacer(modifier = Modifier.weight(1f))
                         }
                     }
@@ -589,7 +589,9 @@ fun HomeTab(
     Box(
         modifier = modifier
             .width(146.dp)
-            .clickable { onHomeClick() },
+            .pointerInput(Unit) {
+                detectTapGestures(onTap = { onHomeClick() })
+            },
         contentAlignment = Alignment.Center
     ) {
         Column(
@@ -601,7 +603,7 @@ fun HomeTab(
             // Calendar Icon
             Box(
                 modifier = Modifier
-                    .size(24.dp) // Icon size 24x24px
+                    .size(24.dp)
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_calendar),
@@ -649,7 +651,9 @@ fun CenterTab(
                 .clip(CircleShape)
                 .background(ScanBackground)
                 .border(4.dp, LightBg, CircleShape)
-                .clickable { onQrCodeClick() },
+                .pointerInput(Unit) {
+                    detectTapGestures(onTap = { onQrCodeClick() })
+                },
             contentAlignment = Alignment.Center
         ) {
             // Иконка сканирования
@@ -675,7 +679,9 @@ fun ProfileTab(
 
     Box(
         modifier = modifier
-            .clickable { onProfileClick() },
+            .pointerInput(Unit) {
+                detectTapGestures(onTap = { onProfileClick() })
+            },
         contentAlignment = Alignment.Center
     ) {
         Column(
@@ -737,11 +743,11 @@ fun LessonCard(
             .fillMaxWidth()
             .width(358.dp)
             .padding(horizontal = 16.dp)
-            .clickable { onClick() },
+            .pointerInput(Unit) {
+                detectTapGestures(onTap = { onClick() })
+            },
         shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = LessonCardColor,
-        ),
+        colors = CardDefaults.cardColors(containerColor = LessonCardColor),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(
