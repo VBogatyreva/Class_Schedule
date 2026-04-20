@@ -3,6 +3,7 @@ package ru.bogatyreva.class_schedule.presentation.screens.auth
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -12,8 +13,10 @@ import ru.bogatyreva.class_schedule.domain.model.AuthState
 import ru.bogatyreva.class_schedule.domain.usecase.LoginUseCase
 import ru.bogatyreva.class_schedule.domain.usecase.LogoutUseCase
 import ru.bogatyreva.class_schedule.utils.PhoneNumberFormatter
+import javax.inject.Inject
 
-class AuthViewModel(
+@HiltViewModel
+class AuthViewModel @Inject constructor(
     private val loginUseCase: LoginUseCase,
     private val logoutUseCase: LogoutUseCase
 ) : ViewModel() {

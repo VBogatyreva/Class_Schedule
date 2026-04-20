@@ -98,7 +98,8 @@ fun ScheduleScreen(
     onQrCodeClick: () -> Unit = {},
     onProfileClick: () -> Unit = {},
     onLessonClick: (Int) -> Unit = {},
-    onLogoutClick: () -> Unit = {}
+    onLogoutClick: () -> Unit = {},
+    funDialog: @Composable () -> Unit = { }
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val calendarDates by viewModel.calendarDates.collectAsStateWithLifecycle()
@@ -225,352 +226,358 @@ fun ScheduleScreen(
         }
 
     ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .background(White)
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(48.dp)
-                    .padding(
-                        top = 4.dp,
-                        bottom = 4.dp,
-                        start = 16.dp,
-                        end = 12.dp
-                    ),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                // Март 2026
-                Box(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(100.dp))
-                        .height(40.dp)
-                        .width(102.dp)
-                        .align(Alignment.CenterVertically)
-                ) {
-                    Text(
-                        text = formatMonthYear(state.selectedDate),
-                        style = MaterialTheme.typography.labelLarge,
-                        color = MonthText,
-                        modifier = Modifier
-                            .padding(
-                                top = 10.dp,
-                                bottom = 10.dp,
-                                start = 8.dp
-                            )
-                            .align(Alignment.Center)
-                    )
-                }
-
-                // СЕГОДНЯ - появляется только когда выбран не сегодняшний день
-                Box(
-                    modifier = Modifier
-                        .height(40.dp)
-                        .width(102.dp)
-                        .align(Alignment.CenterVertically),
-                    contentAlignment = Alignment.Center
-                ) {
-                    if (state.showTodayButton) {
-                        Box(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(100.dp))
-                                .pointerInput(Unit) {
-                                    detectTapGestures(onTap = {
-                                        viewModel.processCommand(ScheduleCommands.GoToToday)
-                                    })
-                                }
-                                .height(40.dp)
-                                .width(97.dp)
-                        ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(
-                                        start = 8.dp,
-                                        top = 10.dp,
-                                        bottom = 10.dp,
-                                        end = 4.dp
-                                    ),
-                                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                // Текст Сегодня
-                                Text(
-                                    text = "Сегодня",
-                                    style = MaterialTheme.typography.labelLarge,
-                                    color = BlueToday,
-                                    modifier = Modifier
-                                        .width(59.dp)
-                                        .height(20.dp)
-                                )
-                                // Иконка "Сегодня" (треугольник/стрелка)
-                                Icon(
-                                    painter = painterResource(id = R.drawable.ic_today_navigation),
-                                    contentDescription = null,
-                                    tint = BlueToday,
-                                    modifier = Modifier.size(
-                                        4.dp,
-                                        8.dp
-                                    )
-                                )
-                            }
-                        }
-                    }
-                    // Если кнопки нет, Box остается пустым, но с теми же размерами
-                    // тогда элементы на экране не прыгают вверх
-                }
-            }
-
-            // Календарь
-            LazyRow(
-                state = listState,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(96.dp),
-                horizontalArrangement = Arrangement.spacedBy(0.dp),
-                contentPadding = PaddingValues(horizontal = 16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                itemsIndexed(calendarDates) { index, date ->
-                    val localDate = date.atZone(ZoneId.systemDefault()).toLocalDate()
-                    val dayNumber = localDate.dayOfMonth.toString()
-                    val dayOfWeek = when (localDate.dayOfWeek.value) {
-                        1 -> "ПН"
-                        2 -> "ВТ"
-                        3 -> "СР"
-                        4 -> "ЧТ"
-                        5 -> "ПТ"
-                        6 -> "СБ"
-                        7 -> "ВС"
-                        else -> ""
-                    }
-                    val isSelected = isSameDay(date, state.selectedDate)
-
-                    // для индикации уроков, т.к. метод suspend вызываем LaunchedEffect
-                    var hasLessons by remember { mutableStateOf(false) }
-                    LaunchedEffect(date) {
-                        hasLessons = viewModel.checkIfDateHasLessons(date)
-                    }
-
-                    // Определяем цвет для выходных
-                    val isWeekend = localDate.dayOfWeek.value == 6 || localDate.dayOfWeek.value == 7
-
-                    // Цвет для текста дня недели
-                    val dayOfWeekColor = when {
-                        isWeekend && !isSelected -> WeekendsText
-                        isWeekend && isSelected -> WeekendsText
-                        else -> WeekdaysText
-                    }
-
-                    // Цвет для текста числа
-                    val numberTextColor = when {
-                        isSelected -> White // Белый для выделенной даты
-                        isWeekend -> WeekendsText // для невыделенных выходных
-                        else -> WeekdaysText // для будних дней
-                    }
-
-                    // Фон для числа
-                    val numberBackgroundColor = if (isSelected) BlueSelected else Transparent
-
-
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier
-                            .width(dayWidth)
-                            .pointerInput(Unit) {
-                                detectTapGestures(onTap = {
-                                    viewModel.processCommand(ScheduleCommands.SelectDate(date))
-                                })
-                            }
-                    ) {
-                        // День недели
-                        Text(
-                            text = dayOfWeek,
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = dayOfWeekColor, // Цвет зависит от выходного или буднего дня
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.padding(bottom = 4.dp)
-                        )
-
-                        // Число
-                        Box(
-                            modifier = Modifier
-                                .size(40.dp)
-                                .clip(CircleShape)
-                                .background(numberBackgroundColor),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = dayNumber,
-                                style = MaterialTheme.typography.bodyLarge,
-                                color = numberTextColor,
-                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
-                            )
-                        }
-
-                        // Индикатор наличия занятий
-                        if (!isSelected) {
-                            Spacer(modifier = Modifier.height(4.dp))
-                            Box(
-                                modifier = Modifier
-                                    .size(4.dp)
-                                    .clip(CircleShape)
-                                    .background(if (hasLessons) Color(0xFF2196F3) else Color.Transparent)
-                            )
-                        } else {
-                            Spacer(modifier = Modifier.height(4.dp))
-                        }
-                    }
-                }
-            }
-
-            // Разделительная линия
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(1.dp)
-                    .background(Color(0xFFE0E0E0))
-            )
-
-            // Контентная часть
+        Box(modifier = Modifier.fillMaxSize()) {
             Column(
                 modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth()
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .background(White)
             ) {
-                // Количество занятий
-                if (state.lessonsCount > 0 && state.lastLessonEndTime != null) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(44.dp)
-                            .padding(10.dp),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = "${getLessonsCountText(state.lessonsCount)} до ${state.lastLessonEndTime}",
-                            style = MaterialTheme.typography.titleMedium,
-                            color = SummaryTextColor,
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier
-                                .width(370.dp)
-                                .height(24.dp)
-                        )
-                    }
-                } else {
-                    Spacer(modifier = Modifier.height(44.dp))
-                }
-
-                // Список занятий
-                if (state.isEmptyState) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(48.dp)
+                        .padding(
+                            top = 4.dp,
+                            bottom = 4.dp,
+                            start = 16.dp,
+                            end = 12.dp
+                        ),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // Март 2026
                     Box(
                         modifier = Modifier
-                            .fillMaxSize()
-                            .weight(1f),
-                        contentAlignment = Alignment.TopCenter
+                            .clip(RoundedCornerShape(100.dp))
+                            .height(40.dp)
+                            .width(102.dp)
+                            .align(Alignment.CenterVertically)
                     ) {
+                        Text(
+                            text = formatMonthYear(state.selectedDate),
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MonthText,
+                            modifier = Modifier
+                                .padding(
+                                    top = 10.dp,
+                                    bottom = 10.dp,
+                                    start = 8.dp
+                                )
+                                .align(Alignment.Center)
+                        )
+                    }
+
+                    // СЕГОДНЯ - появляется только когда выбран не сегодняшний день
+                    Box(
+                        modifier = Modifier
+                            .height(40.dp)
+                            .width(102.dp)
+                            .align(Alignment.CenterVertically),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        if (state.showTodayButton) {
+                            Box(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(100.dp))
+                                    .pointerInput(Unit) {
+                                        detectTapGestures(onTap = {
+                                            viewModel.processCommand(ScheduleCommands.GoToToday)
+                                        })
+                                    }
+                                    .height(40.dp)
+                                    .width(97.dp)
+                            ) {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(
+                                            start = 8.dp,
+                                            top = 10.dp,
+                                            bottom = 10.dp,
+                                            end = 4.dp
+                                        ),
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    // Текст Сегодня
+                                    Text(
+                                        text = "Сегодня",
+                                        style = MaterialTheme.typography.labelLarge,
+                                        color = BlueToday,
+                                        modifier = Modifier
+                                            .width(59.dp)
+                                            .height(20.dp)
+                                    )
+                                    // Иконка "Сегодня" (треугольник/стрелка)
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.ic_today_navigation),
+                                        contentDescription = null,
+                                        tint = BlueToday,
+                                        modifier = Modifier.size(
+                                            4.dp,
+                                            8.dp
+                                        )
+                                    )
+                                }
+                            }
+                        }
+                        // Если кнопки нет, Box остается пустым, но с теми же размерами
+                        // тогда элементы на экране не прыгают вверх
+                    }
+                }
+
+                // Календарь
+                LazyRow(
+                    state = listState,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(96.dp),
+                    horizontalArrangement = Arrangement.spacedBy(0.dp),
+                    contentPadding = PaddingValues(horizontal = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    itemsIndexed(calendarDates) { index, date ->
+                        val localDate = date.atZone(ZoneId.systemDefault()).toLocalDate()
+                        val dayNumber = localDate.dayOfMonth.toString()
+                        val dayOfWeek = when (localDate.dayOfWeek.value) {
+                            1 -> "ПН"
+                            2 -> "ВТ"
+                            3 -> "СР"
+                            4 -> "ЧТ"
+                            5 -> "ПТ"
+                            6 -> "СБ"
+                            7 -> "ВС"
+                            else -> ""
+                        }
+                        val isSelected = isSameDay(date, state.selectedDate)
+
+                        // для индикации уроков, т.к. метод suspend вызываем LaunchedEffect
+                        var hasLessons by remember { mutableStateOf(false) }
+                        LaunchedEffect(date) {
+                            hasLessons = viewModel.checkIfDateHasLessons(date)
+                        }
+
+                        // Определяем цвет для выходных
+                        val isWeekend =
+                            localDate.dayOfWeek.value == 6 || localDate.dayOfWeek.value == 7
+
+                        // Цвет для текста дня недели
+                        val dayOfWeekColor = when {
+                            isWeekend && !isSelected -> WeekendsText
+                            isWeekend && isSelected -> WeekendsText
+                            else -> WeekdaysText
+                        }
+
+                        // Цвет для текста числа
+                        val numberTextColor = when {
+                            isSelected -> White // Белый для выделенной даты
+                            isWeekend -> WeekendsText // для невыделенных выходных
+                            else -> WeekdaysText // для будних дней
+                        }
+
+                        // Фон для числа
+                        val numberBackgroundColor = if (isSelected) BlueSelected else Transparent
+
+
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             modifier = Modifier
-                                .fillMaxWidth()
+                                .width(dayWidth)
+                                .pointerInput(Unit) {
+                                    detectTapGestures(onTap = {
+                                        viewModel.processCommand(ScheduleCommands.SelectDate(date))
+                                    })
+                                }
                         ) {
-                            // Отступ сверху 112px до иконки
-                            Spacer(modifier = Modifier.height(112.dp))
+                            // День недели
+                            Text(
+                                text = dayOfWeek,
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = dayOfWeekColor, // Цвет зависит от выходного или буднего дня
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.padding(bottom = 4.dp)
+                            )
 
-                            // Круглая иконка с солнцем
+                            // Число
                             Box(
                                 modifier = Modifier
-                                    .size(50.dp)
+                                    .size(40.dp)
                                     .clip(CircleShape)
-                                    .background(SunIconBackground.copy(alpha = 0.15f))
+                                    .background(numberBackgroundColor),
+                                contentAlignment = Alignment.Center
                             ) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.ic_sun),
-                                    contentDescription = null,
-                                    tint = SunIconBackground,
-                                    modifier = Modifier
-                                        .size(33.dp)
-                                        .align(Alignment.Center)
+                                Text(
+                                    text = dayNumber,
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    color = numberTextColor,
+                                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
                                 )
                             }
 
-                            // Отступ от иконки до текста Выходной 16px
-                            Spacer(modifier = Modifier.height(16.dp))
-
-                            // Текст Выходной
-                            Text(
-                                text = "Выходной",
-                                style = MaterialTheme.typography.titleLarge,
-                                color = Black,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(28.dp)
-                                    .padding(horizontal = 50.dp),
-                                textAlign = TextAlign.Center
-                            )
-
-                            // Отступ от Выходной до описания 8px
-                            Spacer(modifier = Modifier.height(8.dp))
-
-                            // Текст описания
-                            Text(
-                                text = "В этот день нет занятий. Отдыхайте и набирайтесь сил :)",
-                                style = MaterialTheme.typography.bodyLarge,
-                                color = SummaryTextColor,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(48.dp)
-                                    .padding(horizontal = 50.dp),
-                                textAlign = TextAlign.Center,
-                                lineHeight = 24.sp
-                            )
-                            Spacer(modifier = Modifier.weight(1f))
-                        }
-                    }
-
-                } else {
-                    LazyColumn(
-                        modifier = Modifier
-                            .weight(1f),
-                        verticalArrangement = Arrangement.spacedBy(4.dp)
-                    ) {
-                        itemsIndexed(state.lessons) { index, lesson ->
-                            LessonCard(
-                                lesson = lesson,
-                                onClick = {
-                                    // Переход к деталям урока
-                                    onLessonClick(lesson.id)
-                                }
-                            )
-
-                            if (index < state.lessons.size - 1) {
-                                val nextLesson = state.lessons[index + 1]
-                                val breakDuration = lesson.getBreakDuration()
-
-                                if (breakDuration != null) {
-
-                                    Spacer(modifier = Modifier.height(4.dp))
-
-                                    BreakIndicator(
-                                        startTime = lesson.endTime,
-                                        endTime = nextLesson.startTime,
-                                        duration = breakDuration
-                                    )
-
-                                    Spacer(modifier = Modifier.height(4.dp))
-                                }
+                            // Индикатор наличия занятий
+                            if (!isSelected) {
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Box(
+                                    modifier = Modifier
+                                        .size(4.dp)
+                                        .clip(CircleShape)
+                                        .background(if (hasLessons) Color(0xFF2196F3) else Color.Transparent)
+                                )
+                            } else {
+                                Spacer(modifier = Modifier.height(4.dp))
                             }
-                        }
-                        item {
-                            Spacer(modifier = Modifier.height(16.dp))
                         }
                     }
                 }
+
+                // Разделительная линия
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(1.dp)
+                        .background(Color(0xFFE0E0E0))
+                )
+
+                // Контентная часть
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth()
+                ) {
+                    // Количество занятий
+                    if (state.lessonsCount > 0 && state.lastLessonEndTime != null) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(44.dp)
+                                .padding(10.dp),
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "${getLessonsCountText(state.lessonsCount)} до ${state.lastLessonEndTime}",
+                                style = MaterialTheme.typography.titleMedium,
+                                color = SummaryTextColor,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier
+                                    .width(370.dp)
+                                    .height(24.dp)
+                            )
+                        }
+                    } else {
+                        Spacer(modifier = Modifier.height(44.dp))
+                    }
+
+                    // Список занятий
+                    if (state.isEmptyState) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .weight(1f),
+                            contentAlignment = Alignment.TopCenter
+                        ) {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                            ) {
+                                // Отступ сверху 112px до иконки
+                                Spacer(modifier = Modifier.height(112.dp))
+
+                                // Круглая иконка с солнцем
+                                Box(
+                                    modifier = Modifier
+                                        .size(50.dp)
+                                        .clip(CircleShape)
+                                        .background(SunIconBackground.copy(alpha = 0.15f))
+                                ) {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.ic_sun),
+                                        contentDescription = null,
+                                        tint = SunIconBackground,
+                                        modifier = Modifier
+                                            .size(33.dp)
+                                            .align(Alignment.Center)
+                                    )
+                                }
+
+                                // Отступ от иконки до текста Выходной 16px
+                                Spacer(modifier = Modifier.height(16.dp))
+
+                                // Текст Выходной
+                                Text(
+                                    text = "Выходной",
+                                    style = MaterialTheme.typography.titleLarge,
+                                    color = Black,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(28.dp)
+                                        .padding(horizontal = 50.dp),
+                                    textAlign = TextAlign.Center
+                                )
+
+                                // Отступ от Выходной до описания 8px
+                                Spacer(modifier = Modifier.height(8.dp))
+
+                                // Текст описания
+                                Text(
+                                    text = "В этот день нет занятий. Отдыхайте и набирайтесь сил :)",
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    color = SummaryTextColor,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(48.dp)
+                                        .padding(horizontal = 50.dp),
+                                    textAlign = TextAlign.Center,
+                                    lineHeight = 24.sp
+                                )
+
+                                // Отступ снизу 330px
+                                Spacer(modifier = Modifier.weight(1f))
+                            }
+                        }
+
+                    } else {
+                        LazyColumn(
+                            modifier = Modifier
+                                .weight(1f),
+                            verticalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            itemsIndexed(state.lessons) { index, lesson ->
+                                LessonCard(
+                                    lesson = lesson,
+                                    onClick = {
+                                        // Переход к деталям урока
+                                        onLessonClick(lesson.id)
+                                    }
+                                )
+
+                                if (index < state.lessons.size - 1) {
+                                    val nextLesson = state.lessons[index + 1]
+                                    val breakDuration = lesson.getBreakDuration()
+
+                                    if (breakDuration != null) {
+
+                                        Spacer(modifier = Modifier.height(4.dp))
+
+                                        BreakIndicator(
+                                            startTime = lesson.endTime,
+                                            endTime = nextLesson.startTime,
+                                            duration = breakDuration
+                                        )
+
+                                        Spacer(modifier = Modifier.height(4.dp))
+                                    }
+                                }
+                            }
+                            item {
+                                Spacer(modifier = Modifier.height(16.dp))
+                            }
+                        }
+                    }
+                }
+                funDialog()
             }
         }
     }
@@ -747,7 +754,9 @@ fun LessonCard(
                 detectTapGestures(onTap = { onClick() })
             },
         shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = LessonCardColor),
+        colors = CardDefaults.cardColors(
+            containerColor = LessonCardColor,
+        ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(
@@ -786,6 +795,7 @@ fun LessonCard(
                                 lessonType = lesson.lessonType
                             )
                         }
+
                         else -> {} // Другие типы не показываем
                     }
 
@@ -794,9 +804,11 @@ fun LessonCard(
                         LessonStatus.SUBSTITUTION -> {
                             TagSubstitution()
                         }
+
                         LessonStatus.CANCELLED -> {
                             TagCancelled()
                         }
+
                         else -> {} // NORMAL - ничего не показываем
                     }
                 }

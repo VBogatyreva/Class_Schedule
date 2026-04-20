@@ -160,7 +160,7 @@ val FileNameTextStyle = TextStyle(
     color = Color(0xFF1D1B20)
 )
 
-// Для размера файла (Body Small)
+// Для размера файла
 val FileSizeTextStyle = TextStyle(
     fontFamily = Inter,
     fontWeight = FontWeight.Normal, // 400
@@ -180,7 +180,7 @@ val LessonDescriptionTextStyle = TextStyle(
     color = SummaryTextColor
 )
 
-// Для названия темы урока (Body Large SemiBold)
+// Для названия темы урока
 val LessonTitleTextStyle = TextStyle(
     fontFamily = Inter,
     fontWeight = FontWeight.SemiBold, // 600
@@ -190,7 +190,7 @@ val LessonTitleTextStyle = TextStyle(
     color = TitleText
 )
 
-// Для заголовка "Тема урока" (Body Medium)
+// Для заголовка "Тема урока"
 val LessonHeaderTextStyle = TextStyle(
     fontFamily = Inter,
     fontWeight = FontWeight.Medium, // 500
@@ -198,68 +198,4 @@ val LessonHeaderTextStyle = TextStyle(
     lineHeight = 20.sp,
     letterSpacing = 0.25.sp,
     color = Color(0xFF79747E)
-)
-
-// Стили для экранов авторизации
-val WelcomeTitleStyle = TextStyle(
-    fontFamily = Inter,
-    fontWeight = FontWeight.Medium,
-    fontSize = 24.sp,
-    lineHeight = 32.sp,
-    letterSpacing = 0.sp,
-    color = TitleText
-)
-
-val WelcomeSubtitleStyle = TextStyle(
-    fontFamily = Inter,
-    fontWeight = FontWeight.Normal,
-    fontSize = 16.sp,
-    lineHeight = 24.sp,
-    letterSpacing = 0.5.sp,
-    color = SummaryTextColor
-)
-
-val AuthButtonStyle = TextStyle(
-    fontFamily = Inter,
-    fontWeight = FontWeight.Medium,
-    fontSize = 16.sp,
-    lineHeight = 24.sp,
-    letterSpacing = 0.sp,
-    color = Color.White
-)
-
-val AuthLinkStyle = TextStyle(
-    fontFamily = Inter,
-    fontWeight = FontWeight.Medium,
-    fontSize = 14.sp,
-    lineHeight = 20.sp,
-    letterSpacing = 0.sp,
-    color = BlueToday
-)
-
-val InputLabelStyle = TextStyle(
-    fontFamily = Inter,
-    fontWeight = FontWeight.Medium,
-    fontSize = 14.sp,
-    lineHeight = 20.sp,
-    letterSpacing = 0.sp,
-    color = Color(0xFF49454F)
-)
-
-val InputTextStyle = TextStyle(
-    fontFamily = Inter,
-    fontWeight = FontWeight.Normal,
-    fontSize = 16.sp,
-    lineHeight = 24.sp,
-    letterSpacing = 0.5.sp,
-    color = TitleText
-)
-
-val ErrorTextStyle = TextStyle(
-    fontFamily = Inter,
-    fontWeight = FontWeight.Medium,
-    fontSize = 14.sp,
-    lineHeight = 20.sp,
-    letterSpacing = 0.sp,
-    color = Color(0xFFB3261E)
 )

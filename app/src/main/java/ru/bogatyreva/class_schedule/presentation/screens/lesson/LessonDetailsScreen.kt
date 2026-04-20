@@ -89,6 +89,7 @@ import ru.bogatyreva.class_schedule.utils.getInitials
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Locale
+import kotlin.text.format
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -96,7 +97,8 @@ fun LessonDetailsScreen(
     viewModel: LessonDetailsViewModel,
     onBackPressed: () -> Unit = {},
     onQrCodeClick: () -> Unit = {},
-    onProfileClick: () -> Unit = {}
+    onProfileClick: () -> Unit = {},
+    funDialog: @Composable () -> Unit = { }
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     var selectedTab by remember { mutableStateOf(LessonDetailsTab.INFO) }
@@ -201,165 +203,174 @@ fun LessonDetailsScreen(
                 contentAlignment = Alignment.Center
             ) {
                 CircularProgressIndicator()
+                funDialog()
             }
         } else {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-                    .background(White)
-            ) {
-                LessonDateHeader(lesson = state.lesson)
-                LessonInfoContent(lesson = state.lesson)
-
-                // Сегментированные кнопки
-                val activeBackgroundColor = ActiveBackgroundColor
-                val activeTextColor = ActiveTextColor
-                val inactiveBackgroundColor = InactiveBackgroundColor
-                val inactiveTextColor = InactiveTextColor
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                        .padding(vertical = 0.dp),
-                    horizontalArrangement = Arrangement.spacedBy(2.dp)
-                ) {
-                    // Информация
-                    Box(
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(40.dp)
-                            .clip(
-                                RoundedCornerShape(
-                                    topStart = 20.dp,
-                                    topEnd = 8.dp,
-                                    bottomStart = 20.dp,
-                                    bottomEnd = 8.dp
-                                )
-                            )
-                            .background(
-                                if (selectedTab == LessonDetailsTab.INFO) activeBackgroundColor else inactiveBackgroundColor
-                            )
-                            .pointerInput(Unit) {
-                                detectTapGestures(onTap = { selectedTab = LessonDetailsTab.INFO })
-                            },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "Информация",
-                            style = MaterialTheme.typography.labelLarge.copy(
-                                letterSpacing = 0.1.sp
-                            ),
-                            fontWeight = FontWeight.Medium,
-                            color = if (selectedTab == LessonDetailsTab.INFO) activeTextColor else inactiveTextColor,
-                            modifier = Modifier
-                                .padding(vertical = 10.dp)
-                                .padding(horizontal = 15.5.dp)
-                        )
-                    }
-
-                    // Материалы
-                    Box(
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(40.dp)
-                            .clip(
-                                if (selectedTab == LessonDetailsTab.MATERIALS) {
-                                    RoundedCornerShape(20.dp)
-                                } else {
-                                    RoundedCornerShape(8.dp)
-                                }
-                            )
-                            .background(
-                                if (selectedTab == LessonDetailsTab.MATERIALS) activeBackgroundColor else inactiveBackgroundColor
-                            )
-                            .pointerInput(Unit) {
-                                detectTapGestures(onTap = { selectedTab = LessonDetailsTab.MATERIALS })
-                            },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "Материалы",
-                            style = MaterialTheme.typography.labelLarge.copy(
-                                letterSpacing = 0.1.sp
-                            ),
-                            fontWeight = FontWeight.Medium,
-                            color = if (selectedTab == LessonDetailsTab.MATERIALS) activeTextColor else inactiveTextColor,
-                            modifier = Modifier
-                                .padding(vertical = 10.dp)
-                                .padding(horizontal = 20.5.dp)
-                        )
-                    }
-
-                    // Задание
-                    Box(
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(40.dp)
-                            .clip(
-                                RoundedCornerShape(
-                                    topStart = 8.dp,
-                                    topEnd = 20.dp,
-                                    bottomStart = 8.dp,
-                                    bottomEnd = 20.dp
-                                )
-                            )
-                            .background(
-                                if (selectedTab == LessonDetailsTab.ASSIGNMENT) activeBackgroundColor else inactiveBackgroundColor
-                            )
-                            .pointerInput(Unit) {
-                                detectTapGestures(onTap = { selectedTab = LessonDetailsTab.ASSIGNMENT })
-                            },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "Задание",
-                            style = MaterialTheme.typography.labelLarge.copy(
-                                letterSpacing = 0.1.sp
-                            ),
-                            fontWeight = FontWeight.Medium,
-                            color = if (selectedTab == LessonDetailsTab.ASSIGNMENT) activeTextColor else inactiveTextColor,
-                            modifier = Modifier
-                                .padding(vertical = 10.dp)
-                                .padding(horizontal = 31.dp)
-                        )
-                    }
-                }
-
-                // Контент по выбранной вкладке
-                LazyColumn(
+            Box(modifier = Modifier.fillMaxSize()) {
+                Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(horizontal = 16.dp)
+                        .padding(paddingValues)
+                        .background(White)
                 ) {
-                    when (selectedTab) {
-                        LessonDetailsTab.INFO -> {
-                            item { InfoTabContent(lesson = state.lesson, viewModel = viewModel) }
+                    LessonDateHeader(lesson = state.lesson)
+                    LessonInfoContent(lesson = state.lesson)
+
+                    // Сегментированные кнопки
+                    val activeBackgroundColor = ActiveBackgroundColor
+                    val activeTextColor = ActiveTextColor
+                    val inactiveBackgroundColor = InactiveBackgroundColor
+                    val inactiveTextColor = InactiveTextColor
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp)
+                            .padding(vertical = 0.dp),
+                        horizontalArrangement = Arrangement.spacedBy(2.dp)
+                    ) {
+                        // Информация
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(40.dp)
+                                .clip(
+                                    RoundedCornerShape(
+                                        topStart = 20.dp,
+                                        topEnd = 8.dp,
+                                        bottomStart = 20.dp,
+                                        bottomEnd = 8.dp
+                                    )
+                                )
+                                .background(
+                                    if (selectedTab == LessonDetailsTab.INFO) activeBackgroundColor else inactiveBackgroundColor
+                                )
+                                .pointerInput(Unit) {
+                                    detectTapGestures(onTap = { selectedTab = LessonDetailsTab.INFO })
+                                },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "Информация",
+                                style = MaterialTheme.typography.labelLarge.copy(
+                                    letterSpacing = 0.1.sp
+                                ),
+                                fontWeight = FontWeight.Medium,
+                                color = if (selectedTab == LessonDetailsTab.INFO) activeTextColor else inactiveTextColor,
+                                modifier = Modifier
+                                    .padding(vertical = 10.dp)
+                                    .padding(horizontal = 15.5.dp)
+                            )
                         }
 
-                        LessonDetailsTab.MATERIALS -> {
-                            item {
-                                MaterialsTabContent(
-                                    lessonMaterials = state.lessonMaterials,
-                                    submittedMaterials = state.submittedMaterials,
-                                    viewModel = viewModel
+                        // Материалы
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(40.dp)
+                                .clip(
+                                    if (selectedTab == LessonDetailsTab.MATERIALS) {
+                                        RoundedCornerShape(20.dp)
+                                    } else {
+                                        RoundedCornerShape(8.dp)
+                                    }
                                 )
-                            }
+                                .background(
+                                    if (selectedTab == LessonDetailsTab.MATERIALS) activeBackgroundColor else inactiveBackgroundColor
+                                )
+                                .pointerInput(Unit) {
+                                    detectTapGestures(onTap = { selectedTab = LessonDetailsTab.MATERIALS })
+                                },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "Материалы",
+                                style = MaterialTheme.typography.labelLarge.copy(
+                                    letterSpacing = 0.1.sp
+                                ),
+                                fontWeight = FontWeight.Medium,
+                                color = if (selectedTab == LessonDetailsTab.MATERIALS) activeTextColor else inactiveTextColor,
+                                modifier = Modifier
+                                    .padding(vertical = 10.dp)
+                                    .padding(horizontal = 20.5.dp)
+                            )
                         }
 
-                        LessonDetailsTab.ASSIGNMENT -> {
-                            item {
-                                AssignmentTabContent(
-                                    assignment = state.assignment,
-                                    isSubmitting = state.isSubmitting,
-                                    viewModel = viewModel
+                        // Задание
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(40.dp)
+                                .clip(
+                                    RoundedCornerShape(
+                                        topStart = 8.dp,
+                                        topEnd = 20.dp,
+                                        bottomStart = 8.dp,
+                                        bottomEnd = 20.dp
+                                    )
                                 )
-                            }
+                                .background(
+                                    if (selectedTab == LessonDetailsTab.ASSIGNMENT) activeBackgroundColor else inactiveBackgroundColor
+                                )
+                                .pointerInput(Unit) {
+                                    detectTapGestures(onTap = { selectedTab = LessonDetailsTab.ASSIGNMENT })
+                                },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "Задание",
+                                style = MaterialTheme.typography.labelLarge.copy(
+                                    letterSpacing = 0.1.sp
+                                ),
+                                fontWeight = FontWeight.Medium,
+                                color = if (selectedTab == LessonDetailsTab.ASSIGNMENT) activeTextColor else inactiveTextColor,
+                                modifier = Modifier
+                                    .padding(vertical = 10.dp)
+                                    .padding(horizontal = 31.dp)
+                            )
                         }
                     }
-                    item { Spacer(modifier = Modifier.height(80.dp)) }
+
+                    // Контент по выбранной вкладке
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 16.dp)
+                    ) {
+                        when (selectedTab) {
+                            LessonDetailsTab.INFO -> {
+                                item {
+                                    InfoTabContent(
+                                        lesson = state.lesson,
+                                        viewModel = viewModel
+                                    )
+                                }
+                            }
+
+                            LessonDetailsTab.MATERIALS -> {
+                                item {
+                                    MaterialsTabContent(
+                                        lessonMaterials = state.lessonMaterials,
+                                        submittedMaterials = state.submittedMaterials,
+                                        viewModel = viewModel
+                                    )
+                                }
+                            }
+
+                            LessonDetailsTab.ASSIGNMENT -> {
+                                item {
+                                    AssignmentTabContent(
+                                        assignment = state.assignment,
+                                        isSubmitting = state.isSubmitting,
+                                        viewModel = viewModel
+                                    )
+                                }
+                            }
+                        }
+                        item { Spacer(modifier = Modifier.height(80.dp)) }
+                    }
                 }
+                funDialog()
             }
         }
     }
@@ -489,6 +500,7 @@ fun InfoTabContent(
                 val teacherNameForAvatar = when {
                     lesson.status == LessonStatus.SUBSTITUTION && !lesson.substitutionTeacher.isNullOrBlank() ->
                         lesson.substitutionTeacher
+
                     else -> lesson.originalTeacher
                 }
 
@@ -525,6 +537,7 @@ fun InfoTabContent(
                     val teacherName = when {
                         lesson.status == LessonStatus.SUBSTITUTION && hasSubstitutionTeacher ->
                             lesson.substitutionTeacher
+
                         hasOriginalTeacher -> lesson.originalTeacher
                         else -> ""
                     }

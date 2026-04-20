@@ -1,3 +1,12 @@
 <resources>
-    <string name="app_name">Class_Schedule</string>
+    <string name="app_name">ClassHub</string>
+    <string name="confirm_button_text">Отлично</string>
+    <string name="mark_dialog_title">Посещение отмечено</string>
+    <string name="mark_dialog_description">Так держать!</string>
+    <string name="mark_view_text">отмечаем</string>
+    <string name="qr_scan_cancel_button_text">Отмена</string>
+    <string name="ok_text_button_error_dialog">Ок</string>
+    <string name="repeat_text_button_error_dialog">Повторить</string>
+    <string name="title_error_dialog">Ошибка</string>
+    <string name="description_error_dialog">Не получилось отметиться.\nПопробуйте еще раз</string>
 </resources>

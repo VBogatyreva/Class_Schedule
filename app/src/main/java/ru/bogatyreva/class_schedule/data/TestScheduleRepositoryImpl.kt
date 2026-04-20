@@ -10,16 +10,18 @@ import ru.bogatyreva.class_schedule.domain.model.LessonDetails
 import ru.bogatyreva.class_schedule.domain.model.LessonMaterial
 import ru.bogatyreva.class_schedule.domain.model.LessonStatus
 import ru.bogatyreva.class_schedule.domain.model.LessonType
-import ru.bogatyreva.class_schedule.domain.repository.ScheduleRepository
 import ru.bogatyreva.class_schedule.domain.model.SubmittedFile
 import ru.bogatyreva.class_schedule.domain.model.SubmittedMaterial
+import ru.bogatyreva.class_schedule.domain.repository.ScheduleRepository
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.TextStyle
 import java.util.Locale
+import javax.inject.Inject
 
-class TestScheduleRepositoryImpl : ScheduleRepository {
+class TestScheduleRepositoryImpl @Inject constructor(
+) : ScheduleRepository {
 
     // Фиксирую дату для тестовых данных на: Понедельник, 30 марта 2026 года
     private val fixedDate = LocalDate.of(2026, 3, 30)

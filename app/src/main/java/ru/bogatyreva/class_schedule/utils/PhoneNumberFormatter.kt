@@ -1,52 +1,54 @@
 package ru.bogatyreva.class_schedule.utils
 
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
+import kotlin.math.min
+
+
+const val PHONE_MASK = "+# (###) ###-##-##" // маска для номера телефона
+const val MASK_CHAR = '#'
 
 object PhoneNumberFormatter {
 
     fun format(textFieldValue: TextFieldValue): TextFieldValue {
         val input = textFieldValue.text
-
-        // Извлекаем только цифры
         val digits = input.filter { it.isDigit() }.take(11)
 
-        // Если нет цифр, возвращаем пустую строку
-        if (digits.isEmpty()) {
+        if (digits.isEmpty() && input.isEmpty()) {
             return TextFieldValue(
                 text = "",
-                selection = androidx.compose.ui.text.TextRange(0)
+                selection = TextRange(0)
             )
         }
 
-        // Форматируем номер
-        val formatted = formatDigits(digits)
+        val formatted = applyMask(digits, PHONE_MASK)
 
-        // Курсор всегда в конце
         return TextFieldValue(
-            text = formatted,
-            selection = androidx.compose.ui.text.TextRange(formatted.length)
+            text = if (input.first() == '+' && input.length < 2) "+" else formatted,
+            selection = if (input.first() == '+' && input.length < 2) TextRange(input.length)
+            else TextRange(formatted.length)
         )
     }
 
-    private fun formatDigits(digits: String): String {
-        val result = StringBuilder()
 
-        when (digits.length) {
-            1 -> result.append("+${digits[0]}")
-            2 -> result.append("+${digits[0]} (${digits[1]}")
-            3 -> result.append("+${digits[0]} (${digits[1]}${digits[2]}")
-            4 -> result.append("+${digits[0]} (${digits[1]}${digits[2]}${digits[3]}")
-            5 -> result.append("+${digits[0]} (${digits[1]}${digits[2]}${digits[3]}) ${digits[4]}")
-            6 -> result.append("+${digits[0]} (${digits[1]}${digits[2]}${digits[3]}) ${digits[4]}${digits[5]}")
-            7 -> result.append("+${digits[0]} (${digits[1]}${digits[2]}${digits[3]}) ${digits[4]}${digits[5]}${digits[6]}")
-            8 -> result.append("+${digits[0]} (${digits[1]}${digits[2]}${digits[3]}) ${digits[4]}${digits[5]}${digits[6]}-${digits[7]}")
-            9 -> result.append("+${digits[0]} (${digits[1]}${digits[2]}${digits[3]}) ${digits[4]}${digits[5]}${digits[6]}-${digits[7]}${digits[8]}")
-            10 -> result.append("+${digits[0]} (${digits[1]}${digits[2]}${digits[3]}) ${digits[4]}${digits[5]}${digits[6]}-${digits[7]}${digits[8]}-${digits[9]}")
-            11 -> result.append("+${digits[0]} (${digits[1]}${digits[2]}${digits[3]}) ${digits[4]}${digits[5]}${digits[6]}-${digits[7]}${digits[8]}-${digits[9]}${digits[10]}")
-            else -> result.append("+${digits[0]} (${digits[1]}${digits[2]}${digits[3]}) ${digits[4]}${digits[5]}${digits[6]}-${digits[7]}${digits[8]}-${digits[9]}${digits[10]}")
+    private fun applyMask(number: String, mask: String): String {
+        val maskPlaceholderCharCount = mask.count { it == MASK_CHAR }
+        var maskCurrentCharIndex = 0
+        val output = StringBuilder()
+
+        number.take(min(maskPlaceholderCharCount, number.length)).forEach { digit ->
+            for (i in maskCurrentCharIndex until mask.length) {
+                if (mask[i] == MASK_CHAR) {
+                    output.append(digit)
+                    maskCurrentCharIndex += 1
+                    break
+                } else {
+                    output.append(mask[i])
+                    maskCurrentCharIndex = i + 1
+                }
+            }
         }
-
-        return result.toString()
+        return output.toString()
     }
 
     fun extractDigits(formatted: String): String {

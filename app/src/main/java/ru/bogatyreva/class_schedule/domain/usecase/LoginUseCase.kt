@@ -3,9 +3,10 @@ package ru.bogatyreva.class_schedule.domain.usecase
 import ru.bogatyreva.class_schedule.domain.model.AuthResult
 import ru.bogatyreva.class_schedule.domain.model.LoginCredentials
 import ru.bogatyreva.class_schedule.domain.repository.AuthRepository
+import javax.inject.Inject
 
 // для выполнения входа в приложение
-class LoginUseCase(
+class LoginUseCase @Inject constructor (
     private val authRepository: AuthRepository
 ) {
     suspend operator fun invoke(phoneNumber: String, password: String): AuthResult {

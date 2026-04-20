@@ -3,8 +3,11 @@ package ru.bogatyreva.class_schedule.data
 import ru.bogatyreva.class_schedule.domain.model.AuthResult
 import ru.bogatyreva.class_schedule.domain.model.LoginCredentials
 import ru.bogatyreva.class_schedule.domain.repository.AuthRepository
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class AuthRepositoryImpl : AuthRepository {
+@Singleton
+class AuthRepositoryImpl @Inject constructor() : AuthRepository {
 
     private val validCredentials = mapOf(
         "79999999999" to "666666",
@@ -12,8 +15,7 @@ class AuthRepositoryImpl : AuthRepository {
     )
 
     override suspend fun login(credentials: LoginCredentials): AuthResult {
-        // credentials.phoneNumber уже содержит только цифры
-        val phoneDigits = credentials.phoneNumber
+        val phoneDigits = credentials.phoneNumber.filter { it.isDigit() }
 
         return if (validCredentials[phoneDigits] == credentials.password) {
             AuthResult.Success("mock_token_${System.currentTimeMillis()}")

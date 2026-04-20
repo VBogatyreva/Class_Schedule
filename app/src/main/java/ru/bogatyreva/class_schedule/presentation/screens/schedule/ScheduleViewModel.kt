@@ -2,7 +2,9 @@ package ru.bogatyreva.class_schedule.presentation.screens.schedule
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -17,8 +19,11 @@ import ru.bogatyreva.class_schedule.utils.isSameDay
 import java.time.Duration
 import java.time.Instant
 import java.time.ZoneId
+import javax.inject.Inject
+import kotlin.compareTo
 
-class ScheduleViewModel(
+@HiltViewModel
+class ScheduleViewModel @Inject constructor(
     private val repository: ScheduleRepository
 ) : ViewModel() {
     private val getCalendarDatesUseCase = GetCalendarDatesUseCase(repository)

@@ -1,5 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
+    alias (libs.plugins.legacy.kapt)
+    alias(libs.plugins.dagger.hilt)
     alias(libs.plugins.kotlin.compose)
 }
 
@@ -26,9 +28,12 @@ android {
             )
         }
     }
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.11"
+    }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     buildFeatures {
         compose = true
@@ -52,8 +57,17 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.foundation)
+    implementation(libs.androidx.compose.navigation)
+    implementation(libs.accompanist.permissions)
 
-    // Material Icons (оба нужны - основной и extended)
+    //Compose hilt
+    implementation(libs.dagger.hilt.android)
+    implementation(libs.androidx.compose.runtime)
+    kapt ( libs.dagger.hilt.compiler )
+    implementation(libs.androidx.hilt)
+
+
+    // Material Icons
     implementation(libs.androidx.compose.material.icons)
     implementation(libs.androidx.compose.material.icons.extended)
 
@@ -63,7 +77,15 @@ dependencies {
 
     // Flow и ViewModel
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
-    implementation(libs.androidx.compose.foundation.layout)
+
+    //camera view
+    implementation(libs.androidx.camera.core)
+    implementation(libs.androidx.camera.camera2)
+    implementation(libs.androidx.camera.lifecycle)
+    implementation(libs.androidx.camera.view)
+
+    //mlkit
+    implementation(libs.mlkit)
 
     // Testing
     testImplementation(libs.junit)
@@ -76,4 +98,9 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
+
+}
+
+kapt {
+    correctErrorTypes = true
 }

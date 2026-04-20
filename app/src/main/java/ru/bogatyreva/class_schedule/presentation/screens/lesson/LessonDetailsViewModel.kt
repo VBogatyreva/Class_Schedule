@@ -2,6 +2,7 @@ package ru.bogatyreva.class_schedule.presentation.screens.lesson
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -16,13 +17,14 @@ import ru.bogatyreva.class_schedule.domain.repository.ScheduleRepository
 import ru.bogatyreva.class_schedule.domain.usecase.GetLessonDetailsUseCase
 import ru.bogatyreva.class_schedule.domain.usecase.MarkAttendanceUseCase
 import ru.bogatyreva.class_schedule.domain.usecase.SubmitAssignmentUseCase
+import javax.inject.Inject
 
-class LessonDetailsViewModel(
-    private val repository: ScheduleRepository
+@HiltViewModel
+class LessonDetailsViewModel @Inject constructor(
+    private val getLessonDetailsUseCase: GetLessonDetailsUseCase,
+    private val markAttendanceUseCase: MarkAttendanceUseCase,
+    private val submitAssignmentUseCase: SubmitAssignmentUseCase
 ) : ViewModel() {
-    private val getLessonDetailsUseCase = GetLessonDetailsUseCase(repository)
-    private val markAttendanceUseCase = MarkAttendanceUseCase(repository)
-    private val submitAssignmentUseCase = SubmitAssignmentUseCase(repository)
 
     private val _state = MutableStateFlow(LessonDetailsScreenState())
     val state = _state.asStateFlow()
@@ -33,27 +35,35 @@ class LessonDetailsViewModel(
                 is LessonDetailsCommands.LoadLesson -> {
                     loadLessonDetails(command.lessonId)
                 }
+
                 is LessonDetailsCommands.MarkAttendance -> {
                     markAttendance(command.status)
                 }
+
                 is LessonDetailsCommands.SubmitAssignment -> {
                     submitAssignment(command.fileUri)
                 }
+
                 is LessonDetailsCommands.AddFile -> {
                     addFile(command.file)
                 }
+
                 is LessonDetailsCommands.DownloadMaterial -> {
                     downloadMaterial(command.material)
                 }
+
                 is LessonDetailsCommands.OpenOnlineLesson -> {
                     openOnlineLesson()
                 }
+
                 is LessonDetailsCommands.ClearError -> {
                     clearError()
                 }
+
                 is LessonDetailsCommands.ResetState -> {
                     resetState()
                 }
+
                 is LessonDetailsCommands.RemoveFile -> {
                     removeFile(command.fileId)
                 }
