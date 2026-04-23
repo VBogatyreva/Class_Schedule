@@ -9,8 +9,10 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import ru.bogatyreva.class_schedule.data.AuthRepositoryImpl
+import ru.bogatyreva.class_schedule.data.TestCareerRepositoryImpl
 import ru.bogatyreva.class_schedule.data.TestScheduleRepositoryImpl
 import ru.bogatyreva.class_schedule.domain.repository.AuthRepository
+import ru.bogatyreva.class_schedule.domain.repository.CareerRepository
 import ru.bogatyreva.class_schedule.domain.repository.ScheduleRepository
 import ru.bogatyreva.class_schedule.domain.usecase.LoginUseCase
 import ru.bogatyreva.class_schedule.domain.usecase.LogoutUseCase
@@ -48,4 +50,9 @@ class AppModule {
     @Singleton
     @Provides
     fun provideLogoutUseCase(repository: AuthRepository): LogoutUseCase = LogoutUseCase(repository)
+
+    @Singleton
+    @Provides
+    fun provideCareerRepository(): CareerRepository = TestCareerRepositoryImpl()
+
 }

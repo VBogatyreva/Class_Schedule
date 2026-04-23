@@ -12,9 +12,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -57,9 +59,7 @@ import ru.bogatyreva.class_schedule.domain.model.LessonStatus
 import ru.bogatyreva.class_schedule.domain.model.LessonType
 import ru.bogatyreva.class_schedule.domain.model.SubmittedFile
 import ru.bogatyreva.class_schedule.domain.model.SubmittedMaterial
-import ru.bogatyreva.class_schedule.presentation.screens.schedule.CenterTab
-import ru.bogatyreva.class_schedule.presentation.screens.schedule.HomeTab
-import ru.bogatyreva.class_schedule.presentation.screens.schedule.ProfileTab
+import ru.bogatyreva.class_schedule.presentation.screens.schedule.BottomNavItem
 import ru.bogatyreva.class_schedule.presentation.screens.schedule.TagCancelled
 import ru.bogatyreva.class_schedule.presentation.screens.schedule.TagLessonType
 import ru.bogatyreva.class_schedule.presentation.screens.schedule.TagSubstitution
@@ -89,7 +89,6 @@ import ru.bogatyreva.class_schedule.utils.getInitials
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Locale
-import kotlin.text.format
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -98,6 +97,8 @@ fun LessonDetailsScreen(
     onBackPressed: () -> Unit = {},
     onQrCodeClick: () -> Unit = {},
     onProfileClick: () -> Unit = {},
+    onScheduleClick: () -> Unit = {},
+    onCareerClick: () -> Unit = {},
     funDialog: @Composable () -> Unit = { }
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -134,60 +135,69 @@ fun LessonDetailsScreen(
             )
         },
         bottomBar = {
-            // Нижняя панель - Navigation Menu (как на главном экране)
+            // Нижняя панель
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(94.dp)
+                    .wrapContentHeight()
                     .background(LightBg)
                     .border(
                         width = 1.dp,
                         color = Color.Black.copy(alpha = 0.12f),
                         shape = RoundedCornerShape(topStart = 0.dp, topEnd = 0.dp)
                     )
-                    .padding(horizontal = 16.dp)
+                    .navigationBarsPadding()
             ) {
-                // Расписание (слева)
-                Box(
+                Row(
                     modifier = Modifier
-                        .align(Alignment.TopStart)
-                        .padding(start = 16.dp, top = 14.dp)
+                        .fillMaxWidth()
+                        .height(64.dp)
+                        .padding(horizontal = 8.dp),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    HomeTab(
-                        modifier = Modifier
-                            .width(146.dp)
+                    // 1. Расписание
+                    BottomNavItem(
+                        modifier = Modifier.weight(1f)
+                        .width(70.dp)
                             .height(56.dp),
-                        isActive = false,  // на экране детальной информации неактивно
-                        onHomeClick = { }
+                        isActive = true,
+                        icon = R.drawable.ic_calendar,
+                        label = "Расписание",
+                        onClick = onScheduleClick
                     )
-                }
 
-                // Профиль (справа)
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .padding(end = 16.dp, top = 14.dp)
-                ) {
-                    ProfileTab(
-                        modifier = Modifier
-                            .width(146.dp)
+                    // 2. Карьера
+                    BottomNavItem(
+                        modifier = Modifier.weight(1f)
+                            .width(70.dp)
                             .height(56.dp),
-                        isActive = false,  // на экране детальной информации неактивно
-                        onProfileClick = onProfileClick
+                        isActive = false,
+                        icon = R.drawable.ic_career,
+                        label = "Карьера",
+                        onClick = onCareerClick
                     )
-                }
 
-                // Кнопка Scan (по центру)
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .padding(bottom = 18.dp)
-                ) {
-                    CenterTab(
-                        modifier = Modifier
-                            .width(66.dp)
-                            .height(70.dp),
-                        onQrCodeClick = onQrCodeClick
+                    // 3. QR-сканер
+                    BottomNavItem(
+                        modifier = Modifier.weight(1f)
+                            .width(70.dp)
+                            .height(56.dp),
+                        isActive = false,
+                        icon = R.drawable.ic_scan,
+                        label = "Скан QR",
+                        onClick = onQrCodeClick
+                    )
+
+                    // 4. Профиль
+                    BottomNavItem(
+                        modifier = Modifier.weight(1f)
+                            .width(70.dp)
+                            .height(56.dp),
+                        isActive = false,
+                        icon = R.drawable.ic_profile,
+                        label = "Профиль",
+                        onClick = onProfileClick
                     )
                 }
             }

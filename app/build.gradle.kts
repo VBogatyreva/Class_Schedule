@@ -63,6 +63,8 @@ dependencies {
     //Compose hilt
     implementation(libs.dagger.hilt.android)
     implementation(libs.androidx.compose.runtime)
+    implementation(libs.androidx.compose.foundation.layout)
+    implementation(libs.androidx.foundation)
     kapt ( libs.dagger.hilt.compiler )
     implementation(libs.androidx.hilt)
 
@@ -86,6 +88,14 @@ dependencies {
 
     //mlkit
     implementation(libs.mlkit)
+
+    // Accompanist FlowLayout - библиотека для автоматического переноса элементов (тегов, чипов)
+    // на новую строку при переполнении контейнера
+    implementation(libs.accompanist.permissions)
+    implementation(libs.accompanist.flowlayout)
+
+    // Coil
+    implementation(libs.coil.compose)
 
     // Testing
     testImplementation(libs.junit)

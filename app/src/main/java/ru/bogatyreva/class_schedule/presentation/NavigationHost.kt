@@ -28,6 +28,8 @@ import ru.bogatyreva.class_schedule.presentation.screens.auth.HowToGetAccountScr
 import ru.bogatyreva.class_schedule.presentation.screens.auth.LoginScreen
 import ru.bogatyreva.class_schedule.presentation.screens.auth.ResetPasswordScreen
 import ru.bogatyreva.class_schedule.presentation.screens.auth.WelcomeScreen
+import ru.bogatyreva.class_schedule.presentation.screens.career.CareerScreen
+import ru.bogatyreva.class_schedule.presentation.screens.career.CareerViewModel
 import ru.bogatyreva.class_schedule.presentation.screens.lesson.LessonDetailsCommands
 import ru.bogatyreva.class_schedule.presentation.screens.lesson.LessonDetailsScreen
 import ru.bogatyreva.class_schedule.presentation.screens.lesson.LessonDetailsViewModel
@@ -36,15 +38,18 @@ import ru.bogatyreva.class_schedule.presentation.screens.schedule.ErrorMarkDialo
 import ru.bogatyreva.class_schedule.presentation.screens.schedule.MarkDialog
 import ru.bogatyreva.class_schedule.presentation.screens.schedule.MarkDialogState
 import ru.bogatyreva.class_schedule.presentation.screens.schedule.MarkView
+import ru.bogatyreva.class_schedule.presentation.screens.schedule.ScheduleCommands
 import ru.bogatyreva.class_schedule.presentation.screens.schedule.ScheduleScreen
 import ru.bogatyreva.class_schedule.presentation.screens.schedule.ScheduleViewModel
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NavigationHost(
     lessonViewModel: LessonDetailsViewModel = hiltViewModel(),
     scheduleScreenViewModel: ScheduleViewModel = hiltViewModel(),
-    authViewModel: AuthViewModel = hiltViewModel()
+    authViewModel: AuthViewModel = hiltViewModel(),
+    careerViewModel: CareerViewModel = hiltViewModel()
 ) {
     val navController = rememberNavController()
     val context = LocalContext.current
@@ -73,8 +78,7 @@ fun NavigationHost(
         startDestination = if (authState.isAuthenticated) {
             Screens.SCHEDULE.name
         } else {
-//            Screens.WELCOME.name
-            Screens.SCHEDULE.name
+            Screens.WELCOME.name
         }
     ) {
         // Экран приветствия
@@ -120,11 +124,25 @@ fun NavigationHost(
                     lessonViewModel.processCommand(LessonDetailsCommands.LoadLesson(lessonId))
                     navController.navigate(Screens.LESSON.name)
                 },
-                onProfileClick = { /* TODO: Переход в профиль */ },
+                onProfileClick = {
+                    // Переход на профиль или выход
+                    authViewModel.processCommand(AuthCommands.Logout)
+                    navController.popBackStack(Screens.SCHEDULE.name, inclusive = true)
+                    navController.navigate(Screens.WELCOME.name)
+                },
                 onQrCodeClick = {
                     if (!hasCameraPermission) {
                         permissionLauncher.launch(Manifest.permission.CAMERA)
                     } else navController.navigate(route = Screens.QRSCAN.name)
+                },
+                onScheduleClick = {
+                    // Уже на экране расписания, можно обновить данные или ничего не делать
+                    scheduleScreenViewModel.processCommand(
+                        ScheduleCommands.GoToToday
+                    )
+                },
+                onCareerClick = {
+                    navController.navigate(Screens.CAREER.name)
                 },
                 onLogoutClick = {
                     authViewModel.processCommand(AuthCommands.Logout)
@@ -134,7 +152,7 @@ fun NavigationHost(
                 funDialog = {
                     // в зависимости от состояния передаем функцию
                     when (dialogState) {
-                        MarkDialogState.DEFAULT -> Spacer(Modifier.Companion)
+                        MarkDialogState.DEFAULT -> Spacer(Modifier)
                         MarkDialogState.SUCCESS -> {
                             var flag by remember { mutableStateOf(false) }
                             LaunchedEffect(true) {
@@ -160,18 +178,53 @@ fun NavigationHost(
             )
         }
 
+        // Экран карьеры
+        composable(route = Screens.CAREER.name) {
+            CareerScreen(
+                viewModel = careerViewModel,
+                onQrCodeClick = {
+                    if (!hasCameraPermission) {
+                        permissionLauncher.launch(Manifest.permission.CAMERA)
+                    } else {
+                        navController.navigate(route = Screens.QRSCAN.name)
+                    }
+                },
+                onProfileClick = {
+                    authViewModel.processCommand(AuthCommands.Logout)
+                    navController.popBackStack(Screens.CAREER.name, inclusive = true)
+                    navController.navigate(Screens.WELCOME.name)
+                },
+                onScheduleClick = {
+                    navController.popBackStack(Screens.SCHEDULE.name, inclusive = false)
+                    navController.navigate(Screens.SCHEDULE.name)
+                },
+                onVacancyClick = { vacancyId ->
+                    android.util.Log.d("Navigation", "Clicked vacancy: $vacancyId")
+                    // добавить навигацию на детали вакансии
+                }
+            )
+        }
 
         // Экран деталей урока
         composable(route = Screens.LESSON.name) {
             LessonDetailsScreen(
                 viewModel = lessonViewModel,
-                onProfileClick = { /* TODO */ },
+                onProfileClick = {
+                    navController.navigate(Screens.CAREER.name)
+                },
                 onQrCodeClick = {
                     if (!hasCameraPermission) {
                         permissionLauncher.launch(Manifest.permission.CAMERA)
                     } else navController.navigate(route = Screens.QRSCAN.name)
                 },
                 onBackPressed = { navController.popBackStack() },
+                onScheduleClick = {
+                    // Возвращаемся на экран расписания
+                    navController.popBackStack(Screens.SCHEDULE.name, inclusive = false)
+                },
+                onCareerClick = {
+                    navController.navigate(Screens.CAREER.name)
+                },
                 funDialog = {
                     when (dialogState) {
                         MarkDialogState.DEFAULT -> Text(text = "")

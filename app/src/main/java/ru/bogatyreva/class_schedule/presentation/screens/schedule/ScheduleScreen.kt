@@ -2,21 +2,26 @@ package ru.bogatyreva.class_schedule.presentation.screens.schedule
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -97,6 +102,8 @@ fun ScheduleScreen(
     viewModel: ScheduleViewModel = viewModel(),
     onQrCodeClick: () -> Unit = {},
     onProfileClick: () -> Unit = {},
+    onScheduleClick: () -> Unit = {},
+    onCareerClick: () -> Unit = {},
     onLessonClick: (Int) -> Unit = {},
     onLogoutClick: () -> Unit = {},
     funDialog: @Composable () -> Unit = { }
@@ -170,56 +177,65 @@ fun ScheduleScreen(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(94.dp)
+                    .wrapContentHeight()
                     .background(LightBg)
                     .border(
                         width = 1.dp,
                         color = Color.Black.copy(alpha = 0.12f),
                         shape = RoundedCornerShape(topStart = 0.dp, topEnd = 0.dp)
                     )
-                    .padding(horizontal = 16.dp)
+                    .navigationBarsPadding()
             ) {
-                // Расписание
-                Box(
+                Row(
                     modifier = Modifier
-                        .align(Alignment.TopStart)
-                        .padding(start = 16.dp, top = 14.dp)
+                        .fillMaxWidth()
+                        .height(64.dp)
+                        .padding(horizontal = 8.dp),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    HomeTab(
-                        modifier = Modifier
-                            .width(146.dp)
+                    // 1. Расписание
+                    BottomNavItem(
+                        modifier = Modifier.weight(1f)
+                            .width(70.dp)
                             .height(56.dp),
                         isActive = true,
-                        onHomeClick = { }
+                        icon = R.drawable.ic_calendar,
+                        label = "Расписание",
+                        onClick = onScheduleClick
                     )
-                }
 
-                // Профиль
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .padding(end = 16.dp, top = 14.dp)
-                ) {
-                    ProfileTab(
-                        modifier = Modifier
-                            .width(146.dp)
+                    // 2. Карьера
+                    BottomNavItem(
+                        modifier = Modifier.weight(1f)
+                            .width(70.dp)
                             .height(56.dp),
                         isActive = false,
-                        onProfileClick = onLogoutClick
+                        icon = R.drawable.ic_career,
+                        label = "Карьера",
+                        onClick = onCareerClick
                     )
-                }
 
-                // Кнопка Scan
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .padding(bottom = 18.dp)
-                ) {
-                    CenterTab(
-                        modifier = Modifier
-                            .width(66.dp)
-                            .height(70.dp),
-                        onQrCodeClick = onQrCodeClick
+                    // 3. QR-сканер
+                    BottomNavItem(
+                        modifier = Modifier.weight(1f)
+                            .width(70.dp)
+                            .height(56.dp),
+                        isActive = false,
+                        icon = R.drawable.ic_scan,
+                        label = "Скан QR",
+                        onClick = onQrCodeClick
+                    )
+
+                    // 4. Профиль
+                    BottomNavItem(
+                        modifier = Modifier.weight(1f)
+                            .width(70.dp)
+                            .height(56.dp),
+                        isActive = false,
+                        icon = R.drawable.ic_profile,
+                        label = "Профиль",
+                        onClick = onProfileClick
                     )
                 }
             }
@@ -1058,6 +1074,66 @@ fun BreakIndicator(
             color = BreakTextColor,
             modifier = Modifier.height(16.dp),
             textAlign = TextAlign.End
+        )
+    }
+}
+
+// Компонент для пункта нижней навигации
+@Composable
+fun BottomNavItem(
+    modifier: Modifier = Modifier,
+    isActive: Boolean,
+    icon: Int,
+    label: String,
+    onClick: () -> Unit
+) {
+    val iconTint = if (isActive) Color(0xFF3B82F6) else Color(0xFF9E9E9E)
+    val textColor = if (isActive) Color(0xFF3B82F6) else Color(0xFF9E9E9E)
+
+    val iconBackgroundColor = if (isActive) {
+        Color(0xFF3B82F6).copy(alpha = 0.12f)
+    } else {
+        Color.Transparent
+    }
+
+    val interactionSource = remember { MutableInteractionSource() }
+
+    Column(
+        modifier = modifier
+            .fillMaxHeight()
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null
+            ) { onClick() },
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Box(
+            modifier = Modifier
+                .width(56.dp)
+                .height(32.dp)
+                .clip(RoundedCornerShape(16.dp))
+                .background(iconBackgroundColor),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                painter = painterResource(id = icon),
+                contentDescription = label,
+                modifier = Modifier.size(24.dp),
+                tint = iconTint
+            )
+        }
+
+        Spacer(modifier = Modifier.height(4.dp))
+
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelSmall,
+            fontSize = 10.sp,
+            color = textColor,
+            textAlign = TextAlign.Center,
+            maxLines = 1,
+            overflow = TextOverflow.Visible
         )
     }
 }

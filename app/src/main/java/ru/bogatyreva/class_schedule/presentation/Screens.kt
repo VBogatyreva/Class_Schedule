@@ -7,5 +7,6 @@ enum class Screens {
     RESET_PASSWORD,
     SCHEDULE,
     LESSON,
-    QRSCAN
+    QRSCAN,
+    CAREER
 }
