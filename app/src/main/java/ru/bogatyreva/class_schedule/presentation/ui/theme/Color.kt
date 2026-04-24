@@ -25,6 +25,7 @@ val MonthText = Color(0xFF49454F) // #49454F - цвет для заголовк�
 val WeekdaysText = Color(0xFF1D1B20) // #1D1B20 - цвет для дней недели
 val WeekendsText = Color(0xFFB3261E) // #B3261E - цвет для выходных (СБ, ВС)
 val SubjectText = Color(0xFF000000) // #000000 - для цвета предмета
+val ConditionTextColor = Color(0xFF727272)
 
 val LessonTimeText = Color(0xFF3C3C43).copy(alpha = 0.6f)  // #3C3C43 с 60% прозрачности
 
@@ -78,3 +79,5 @@ val TagLessonTypeExam = Color(0xFFFF2D55) // #FF2D55 - для статуса э�
 val Separator = Color(0xFFE6E6E6)  // #E6E6E6 - цвет разделителя
 val Muted = Color(0xFF9E9E9E) // #9E9E9E - для неактивных элементов интерфейса
 val DrillInColor = Color(0xFFC4C4C7) // #C4C4C7 - для иконки перехода
+val VacancyBlockBackGround = Color(0xFFF6F6F6)
+val SkillsColor = Color(0x1A7290DD)

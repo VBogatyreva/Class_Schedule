@@ -2,26 +2,21 @@ package ru.bogatyreva.class_schedule.presentation.screens.schedule
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -61,6 +56,7 @@ import ru.bogatyreva.class_schedule.R
 import ru.bogatyreva.class_schedule.domain.model.Lesson
 import ru.bogatyreva.class_schedule.domain.model.LessonStatus
 import ru.bogatyreva.class_schedule.domain.model.LessonType
+import ru.bogatyreva.class_schedule.presentation.screens.components.CustomBottomBar
 import ru.bogatyreva.class_schedule.presentation.ui.theme.Black
 import ru.bogatyreva.class_schedule.presentation.ui.theme.BlueScan
 import ru.bogatyreva.class_schedule.presentation.ui.theme.BlueSelected
@@ -173,72 +169,15 @@ fun ScheduleScreen(
         },
 
         bottomBar = {
-            // Нижняя панель
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .wrapContentHeight()
-                    .background(LightBg)
-                    .border(
-                        width = 1.dp,
-                        color = Color.Black.copy(alpha = 0.12f),
-                        shape = RoundedCornerShape(topStart = 0.dp, topEnd = 0.dp)
-                    )
-                    .navigationBarsPadding()
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(64.dp)
-                        .padding(horizontal = 8.dp),
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    // 1. Расписание
-                    BottomNavItem(
-                        modifier = Modifier.weight(1f)
-                            .width(70.dp)
-                            .height(56.dp),
-                        isActive = true,
-                        icon = R.drawable.ic_calendar,
-                        label = "Расписание",
-                        onClick = onScheduleClick
-                    )
-
-                    // 2. Карьера
-                    BottomNavItem(
-                        modifier = Modifier.weight(1f)
-                            .width(70.dp)
-                            .height(56.dp),
-                        isActive = false,
-                        icon = R.drawable.ic_career,
-                        label = "Карьера",
-                        onClick = onCareerClick
-                    )
-
-                    // 3. QR-сканер
-                    BottomNavItem(
-                        modifier = Modifier.weight(1f)
-                            .width(70.dp)
-                            .height(56.dp),
-                        isActive = false,
-                        icon = R.drawable.ic_scan,
-                        label = "Скан QR",
-                        onClick = onQrCodeClick
-                    )
-
-                    // 4. Профиль
-                    BottomNavItem(
-                        modifier = Modifier.weight(1f)
-                            .width(70.dp)
-                            .height(56.dp),
-                        isActive = false,
-                        icon = R.drawable.ic_profile,
-                        label = "Профиль",
-                        onClick = onProfileClick
-                    )
-                }
-            }
+            CustomBottomBar(
+                onHomeTabClick = onScheduleClick,
+                onCareerClick = onCareerClick,
+                onProfileClick = onProfileClick,
+                onQrCodeClick = onQrCodeClick,
+                homeTabActive = true,
+                careerTabActive = false,
+                profileTabActive = false
+            )
         }
 
     ) { paddingValues ->
@@ -1074,66 +1013,6 @@ fun BreakIndicator(
             color = BreakTextColor,
             modifier = Modifier.height(16.dp),
             textAlign = TextAlign.End
-        )
-    }
-}
-
-// Компонент для пункта нижней навигации
-@Composable
-fun BottomNavItem(
-    modifier: Modifier = Modifier,
-    isActive: Boolean,
-    icon: Int,
-    label: String,
-    onClick: () -> Unit
-) {
-    val iconTint = if (isActive) Color(0xFF3B82F6) else Color(0xFF9E9E9E)
-    val textColor = if (isActive) Color(0xFF3B82F6) else Color(0xFF9E9E9E)
-
-    val iconBackgroundColor = if (isActive) {
-        Color(0xFF3B82F6).copy(alpha = 0.12f)
-    } else {
-        Color.Transparent
-    }
-
-    val interactionSource = remember { MutableInteractionSource() }
-
-    Column(
-        modifier = modifier
-            .fillMaxHeight()
-            .clickable(
-                interactionSource = interactionSource,
-                indication = null
-            ) { onClick() },
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Box(
-            modifier = Modifier
-                .width(56.dp)
-                .height(32.dp)
-                .clip(RoundedCornerShape(16.dp))
-                .background(iconBackgroundColor),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                painter = painterResource(id = icon),
-                contentDescription = label,
-                modifier = Modifier.size(24.dp),
-                tint = iconTint
-            )
-        }
-
-        Spacer(modifier = Modifier.height(4.dp))
-
-        Text(
-            text = label,
-            style = MaterialTheme.typography.labelSmall,
-            fontSize = 10.sp,
-            color = textColor,
-            textAlign = TextAlign.Center,
-            maxLines = 1,
-            overflow = TextOverflow.Visible
         )
     }
 }

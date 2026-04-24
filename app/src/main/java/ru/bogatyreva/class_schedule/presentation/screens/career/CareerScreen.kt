@@ -2,7 +2,6 @@ package ru.bogatyreva.class_schedule.presentation.screens.career
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -13,11 +12,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -53,11 +50,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.flowlayout.FlowRow
 import ru.bogatyreva.class_schedule.R
 import ru.bogatyreva.class_schedule.domain.model.Vacancy
-import ru.bogatyreva.class_schedule.presentation.screens.schedule.BottomNavItem
+import ru.bogatyreva.class_schedule.presentation.screens.components.CustomBottomBar
 import ru.bogatyreva.class_schedule.presentation.ui.theme.BlueToday
 import ru.bogatyreva.class_schedule.presentation.ui.theme.Inter
 import ru.bogatyreva.class_schedule.presentation.ui.theme.LessonCardColor
-import ru.bogatyreva.class_schedule.presentation.ui.theme.LightBg
 import ru.bogatyreva.class_schedule.presentation.ui.theme.TitleText
 import ru.bogatyreva.class_schedule.presentation.ui.theme.White
 
@@ -106,71 +102,15 @@ fun CareerScreen(
             }
         },
         bottomBar = {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .wrapContentHeight()
-                    .background(LightBg)
-                    .border(
-                        width = 1.dp,
-                        color = Color.Black.copy(alpha = 0.12f),
-                        shape = RoundedCornerShape(topStart = 0.dp, topEnd = 0.dp)
-                    )
-                    .navigationBarsPadding()
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(64.dp)
-                        .padding(horizontal = 8.dp),
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    // 1. Расписание
-                    BottomNavItem(
-                        modifier = Modifier.weight(1f)
-                            .width(70.dp)
-                            .height(56.dp),
-                        isActive = false,
-                        icon = R.drawable.ic_calendar,
-                        label = "Расписание",
-                        onClick = onScheduleClick
-                    )
-
-                    // 2. Карьера
-                    BottomNavItem(
-                        modifier = Modifier.weight(1f)
-                            .width(70.dp)
-                            .height(56.dp),
-                        isActive = true,
-                        icon = R.drawable.ic_career,
-                        label = "Карьера",
-                        onClick = { }
-                    )
-
-                    // 3. QR-сканер
-                    BottomNavItem(
-                        modifier = Modifier.weight(1f)
-                            .width(70.dp)
-                            .height(56.dp),
-                        isActive = false,
-                        icon = R.drawable.ic_scan,
-                        label = "Скан QR",
-                        onClick = onQrCodeClick
-                    )
-
-                    // 4. Профиль
-                    BottomNavItem(
-                        modifier = Modifier.weight(1f)
-                            .width(70.dp)
-                            .height(56.dp),
-                        isActive = false,
-                        icon = R.drawable.ic_profile,
-                        label = "Профиль",
-                        onClick = onProfileClick
-                    )
-                }
-            }
+            CustomBottomBar(
+                onHomeTabClick = onScheduleClick,
+                onCareerClick = { },
+                onProfileClick = onProfileClick,
+                onQrCodeClick = onQrCodeClick,
+                homeTabActive = false,
+                careerTabActive = true,
+                profileTabActive = false
+            )
         },
         containerColor = White
     ) { paddingValues ->

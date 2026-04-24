@@ -2,6 +2,7 @@ package ru.bogatyreva.class_schedule.presentation
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Spacer
@@ -18,9 +19,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import kotlinx.coroutines.delay
 import ru.bogatyreva.class_schedule.presentation.screens.auth.AuthCommands
 import ru.bogatyreva.class_schedule.presentation.screens.auth.AuthViewModel
@@ -41,6 +44,8 @@ import ru.bogatyreva.class_schedule.presentation.screens.schedule.MarkView
 import ru.bogatyreva.class_schedule.presentation.screens.schedule.ScheduleCommands
 import ru.bogatyreva.class_schedule.presentation.screens.schedule.ScheduleScreen
 import ru.bogatyreva.class_schedule.presentation.screens.schedule.ScheduleViewModel
+import ru.bogatyreva.class_schedule.presentation.screens.vacancies.VacancyDetailsScreen
+import ru.bogatyreva.class_schedule.presentation.screens.vacancies.VacancyDetailsViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -199,8 +204,7 @@ fun NavigationHost(
                     navController.navigate(Screens.SCHEDULE.name)
                 },
                 onVacancyClick = { vacancyId ->
-                    android.util.Log.d("Navigation", "Clicked vacancy: $vacancyId")
-                    // добавить навигацию на детали вакансии
+                    navController.navigate("${Screens.VACANCY_DETAILS.name}/$vacancyId")
                 }
             )
         }
@@ -248,6 +252,53 @@ fun NavigationHost(
                                 navController.navigate(Screens.QRSCAN.name)
                             })
                     }
+                }
+            )
+        }
+
+        // Экран деталей вакансии
+        composable(
+            route = "${Screens.VACANCY_DETAILS.name}/{vacancyId}",
+            arguments = listOf(navArgument("vacancyId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val vacancyId = backStackEntry.arguments?.getString("vacancyId") ?: return@composable
+            val viewModel: VacancyDetailsViewModel = hiltViewModel()
+
+            VacancyDetailsScreen(
+                viewModel = viewModel,
+                vacancyId = vacancyId,
+                onBackPressed = {
+                    println("🔍 Back pressed")
+                    navController.popBackStack()
+                },
+                onProfileClick = {
+                    println("🔍 Profile clicked")
+                    authViewModel.processCommand(AuthCommands.Logout)
+                    navController.popBackStack(Screens.SCHEDULE.name, inclusive = false)
+                    navController.navigate(Screens.WELCOME.name)
+                },
+                onScheduleClick = {
+                    println("🔍 Schedule clicked")
+                    navController.popBackStack()
+                    navController.navigate(Screens.SCHEDULE.name)
+                },
+                onCareerClick = {
+                    println("🔍 Career clicked")
+                    navController.popBackStack()
+                    navController.navigate(Screens.CAREER.name)
+                },
+                onQrCodeClick = {
+                    println("🔍 STEP 2: QR clicked in NavigationHost for VacancyDetails")
+                    if (!hasCameraPermission) {
+                        println("🔍 STEP 3: No camera permission, requesting...")
+                        permissionLauncher.launch(Manifest.permission.CAMERA)
+                    } else {
+                        println("🔍 STEP 3: Has camera permission, navigating to QR SCAN")
+                        navController.navigate(Screens.QRSCAN.name)
+                    }
+                },
+                onClickRespond = {
+                    Log.d("VacancyDetails", "Отклик на вакансию: $vacancyId")
                 }
             )
         }

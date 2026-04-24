@@ -9,4 +9,19 @@
     <string name="repeat_text_button_error_dialog">Повторить</string>
     <string name="title_error_dialog">Ошибка</string>
     <string name="description_error_dialog">Не получилось отметиться.\nПопробуйте еще раз</string>
+
+    <string name="vacancy_details_title">Вакансия</string>
+    <string name="condition_format">Формат:</string>
+    <string name="condition_employment">Занятость:</string>
+    <string name="condition_applying_job">Оформление:</string>
+    <string name="condition_schedule">График:</string>
+    <string name="condition_working_hours">Рабочие часы:</string>
+    <string name="condition_frequency_of_payments">Частота выплат:</string>
+    <string name="condition_experience">Опыт:</string>
+    <string name="condition_required_education">Требуемое образование:</string>
+    <string name="description_recruitment_requirements">Требования к соискателю</string>
+    <string name="description_responsibilities">Обязанности</string>
+    <string name="description_conditions">Условия</string>
+    <string name="key_skills_block">Ключевые навыки</string>
+    <string name="respond_button_text">Откликнуться</string>
 </resources>

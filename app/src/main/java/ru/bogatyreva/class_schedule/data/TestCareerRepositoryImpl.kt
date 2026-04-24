@@ -3,6 +3,7 @@ package ru.bogatyreva.class_schedule.data
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import ru.bogatyreva.class_schedule.domain.model.Vacancy
+import ru.bogatyreva.class_schedule.domain.model.VacancyDetails
 import ru.bogatyreva.class_schedule.domain.repository.CareerRepository
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -39,20 +40,21 @@ class TestCareerRepositoryImpl @Inject constructor() : CareerRepository {
             isRemote = true,
             isOnSite = false,
             tags = listOf("Android", "Kotlin"),
-            imageUrl = null  // Нет изображения
+            imageUrl = null
         ),
         Vacancy(
             id = "3",
             title = "Product Manager",
             companyName = "Стартап Инновации",
-            salaryMin = null,  // Нет зарплаты
+            salaryMin = null,
             salaryMax = null,
             employmentType = "проект",
             experienceMin = 2,
             experienceMax = 4,
             isRemote = false,
             isOnSite = true,
-            tags = listOf("Product", "Agile")
+            tags = listOf("Product", "Agile"),
+            imageUrl = null
         ),
         Vacancy(
             id = "4",
@@ -65,7 +67,8 @@ class TestCareerRepositoryImpl @Inject constructor() : CareerRepository {
             experienceMax = 2,
             isRemote = true,
             isOnSite = true,
-            tags = listOf("React", "TypeScript")
+            tags = listOf("React", "TypeScript"),
+            imageUrl = null
         ),
         Vacancy(
             id = "5",
@@ -153,9 +156,232 @@ class TestCareerRepositoryImpl @Inject constructor() : CareerRepository {
         )
     )
 
+    private val mockVacancyDetails = mapOf(
+        "1" to VacancyDetails(
+            id = "1",
+            title = "Middle UX/UI-дизайнер",
+            incomeLevel = "от 120 000 до 240 000 ₽",
+            companyName = "Федеральная мониторинговая компания",
+            companyIcon = "",
+            companyLocation = "Оренбург, Россия",
+            companyDescription = "Федеральная мониторинговая компания задает высокие стандарты ведения бизнеса в сфере аналитики и консалтинга, собирает и обрабатывает рыночную информацию, помогает государству развивать промышленные рынки и экономику нашей страны.\n\nНаша команда ежедневно собирает рыночные данные по более чем 50-ти направлениям промышленного производства и сельского хозяйства. Систематизируя полученную информацию, мы разрабатываем прогнозы по изменению ситуации в отраслях. Свои отчеты мы визуализируем и формируем в информационные пакеты для удобства работы с ними.",
+            workFormat = "удаленно",
+            employment = "проект",
+            applyingJob = "самозанятость",
+            schedule = "5/2",
+            workingHours = 8,
+            frequencyOfPayments = "2 раза в месяц",
+            experience = "от 1 до 3 лет",
+            requiredEducation = "Высшее",
+            recruitmentRequirements = "Коммерческий опыт UX/UI-дизайна от 2 лет, продуктовая разработка\nПортфолио с реальными кейсами — обязательно\nУверенное владение Figma\nПонимание UX-процессов\nБазовое понимание frontend-ограничений",
+            responsibilities = "Проектирование UX/UI для веб-приложений\nПроведение пользовательских исследований\nСоздание и поддержка дизайн-системы\nПодготовка макетов для разработки\nТесная работа с frontend/backend-командой",
+            conditions = "Гибкий график\nВозможности профессионального развития\nКонкурентоспособная заработная плата",
+            keySkills = listOf("Figma", "UI/UX", "Auto Layout", "Prototyping", "User Research"),
+            address = "Оренбург, улица Володарского, 39"
+        ),
+        "2" to VacancyDetails(
+            id = "2",
+            title = "Senior Android Developer",
+            incomeLevel = "от 250 000 до 350 000 ₽",
+            companyName = "ТехноСофт",
+            companyIcon = "",
+            companyLocation = "Москва, Россия (удаленно)",
+            companyDescription = "ТехноСофт - ведущая IT-компания в области разработки мобильных приложений. Мы создаем инновационные продукты для крупнейших заказчиков.",
+            workFormat = "удаленно",
+            employment = "полная занятость",
+            applyingJob = "ТК РФ",
+            schedule = "5/2",
+            workingHours = 8,
+            frequencyOfPayments = "2 раза в месяц",
+            experience = "от 3 до 5 лет",
+            requiredEducation = "Высшее (IT)",
+            recruitmentRequirements = "Опыт разработки на Kotlin от 3 лет\nЗнание Android SDK, Jetpack Compose\nПонимание архитектурных паттернов\nОпыт работы с REST API, Git",
+            responsibilities = "Разработка новых функций\nПоддержка существующего кода\nУчастие в code review\nНаписание unit-тестов\nДокументирование кода",
+            conditions = "Полностью удаленная работа\nГибкий график\nДМС\nОплата курсов и конференций",
+            keySkills = listOf("Kotlin", "Android SDK", "Jetpack Compose", "Coroutines", "Room", "Retrofit"),
+            address = "Москва, ул. Тверская, 15 (офис)"
+        ),
+        "3" to VacancyDetails(
+            id = "3",
+            title = "Product Manager",
+            incomeLevel = "Уровень дохода не указан",
+            companyName = "Стартап Инновации",
+            companyIcon = "",
+            companyLocation = "Санкт-Петербург, Россия",
+            companyDescription = "Стартап Инновации - молодая компания, разрабатывающая AI-решения для бизнеса. Мы создаем продукты, которые меняют рынок.",
+            workFormat = "офис",
+            employment = "проект",
+            applyingJob = "самозанятость",
+            schedule = "5/2",
+            workingHours = 8,
+            frequencyOfPayments = "Раз в месяц",
+            experience = "от 2 до 4 лет",
+            requiredEducation = "Высшее",
+            recruitmentRequirements = "Опыт управления продуктами\nПонимание Agile/Scrum\nАналитическое мышление\nНавыки работы с аналитикой",
+            responsibilities = "Управление продуктом\nСбор и анализ требований\nПриоритизация задач\nВзаимодействие с командой разработки",
+            conditions = "Молодой коллектив\nВозможность влиять на продукт\nУчастие в принятии решений",
+            keySkills = listOf("Product Management", "Agile", "Scrum", "Analytics", "Jira", "Confluence"),
+            address = "Санкт-Петербург, Невский проспект, 88"
+        ),
+        "4" to VacancyDetails(
+            id = "4",
+            title = "Junior Frontend Developer",
+            incomeLevel = "от 80 000 ₽",
+            companyName = "ВебСтудия",
+            companyIcon = "",
+            companyLocation = "Новосибирск, Россия",
+            companyDescription = "ВебСтудия - компания по разработке веб-сайтов и приложений. Работаем с клиентами из разных сфер бизнеса.",
+            workFormat = "гибрид",
+            employment = "полная занятость",
+            applyingJob = "ТК РФ",
+            schedule = "5/2",
+            workingHours = 8,
+            frequencyOfPayments = "2 раза в месяц",
+            experience = "от 1 до 2 лет",
+            requiredEducation = "Среднее профессиональное или высшее",
+            recruitmentRequirements = "Знание HTML, CSS, JavaScript\nБазовые знания React\nПонимание принципов верстки",
+            responsibilities = "Верстка макетов\nРазработка UI компонентов\nИсправление багов\nУчастие в ревью",
+            conditions = "Наставничество\nВозможность обучения\nКорпоративные мероприятия",
+            keySkills = listOf("HTML", "CSS", "JavaScript", "React", "Git"),
+            address = "Новосибирск, ул. Ленина, 10"
+        ),
+        "5" to VacancyDetails(
+            id = "5",
+            title = "Юрист по международному праву (стажер)",
+            incomeLevel = "от 55 000 до 80 000 ₽",
+            companyName = "Конкорд Лигал",
+            companyIcon = "",
+            companyLocation = "Москва, Россия",
+            companyDescription = "Конкорд Лигал - юридическая фирма, специализирующаяся на международном праве и сопровождении внешнеэкономической деятельности.",
+            workFormat = "офис",
+            employment = "стажировка",
+            applyingJob = "ТК РФ",
+            schedule = "5/2",
+            workingHours = 8,
+            frequencyOfPayments = "Раз в месяц",
+            experience = "от 0 до 1 года",
+            requiredEducation = "Высшее юридическое",
+            recruitmentRequirements = "Знание международного права\nАнглийский язык не ниже B2\nОтличное знание законодательства РФ",
+            responsibilities = "Анализ законодательства\nПодготовка правовых заключений\nСоставление договоров\nВедение делопроизводства",
+            conditions = "Наставничество\nВозможность дальнейшего трудоустройства\nИзучение английского языка",
+            keySkills = listOf("Международное право", "Английский язык", "Правовой анализ", "Договорная работа"),
+            address = "Москва, Деловой центр, башня Федерация"
+        ),
+        "6" to VacancyDetails(
+            id = "6",
+            title = "Помощник судьи (арбитраж)",
+            incomeLevel = "от 65 000 до 85 000 ₽",
+            companyName = "Арбитражный суд г. Москвы",
+            companyIcon = "",
+            companyLocation = "Москва, Россия",
+            companyDescription = "Арбитражный суд г. Москвы - государственный орган правосудия. Рассмотрение экономических споров.",
+            workFormat = "офис",
+            employment = "полная занятость",
+            applyingJob = "ТК РФ",
+            schedule = "5/2",
+            workingHours = 8,
+            frequencyOfPayments = "2 раза в месяц",
+            experience = "от 0 до 2 лет",
+            requiredEducation = "Высшее юридическое",
+            recruitmentRequirements = "Знание АПК РФ\nПонимание судебной системы\nНавыки работы с документами\nСтрессоустойчивость",
+            responsibilities = "Подготовка проектов судебных актов\nВедение судебного делопроизводства\nАнализ судебной практики\nУчастие в судебных заседаниях",
+            conditions = "Государственная служба\nСтрогий дресс-код\nСтабильность",
+            keySkills = listOf("Арбитражный процесс", "АПК РФ", "Судебная практика", "Делопроизводство"),
+            address = "Москва, ул. Садовая, 23"
+        ),
+        "7" to VacancyDetails(
+            id = "7",
+            title = "Юрист по трудовому праву (junior)",
+            incomeLevel = "от 60 000 до 90 000 ₽",
+            companyName = "HR Legal",
+            companyIcon = "",
+            companyLocation = "Санкт-Петербург, Россия",
+            companyDescription = "HR Legal - специализированное бюро по трудовому праву. Консультирование компаний по кадровым вопросам.",
+            workFormat = "удаленно",
+            employment = "полная занятость",
+            applyingJob = "ТК РФ",
+            schedule = "5/2",
+            workingHours = 8,
+            frequencyOfPayments = "2 раза в месяц",
+            experience = "от 0 до 2 лет",
+            requiredEducation = "Высшее юридическое",
+            recruitmentRequirements = "Знание Трудового кодекса\nПонимание кадрового делопроизводства\nНавыки составления документов",
+            responsibilities = "Консультирование по трудовым вопросам\nПроверка кадровой документации\nСоставление трудовых договоров",
+            conditions = "Полностью удаленная работа\nГибкий график\nОбучение за счет компании",
+            keySkills = listOf("Трудовое право", "Кадровое делопроизводство", "ТК РФ", "Консультации"),
+            address = "Санкт-Петербург, онлайн"
+        ),
+        "8" to VacancyDetails(
+            id = "8",
+            title = "Специалист по банкротству (стажер)",
+            incomeLevel = "от 50 000 до 70 000 ₽",
+            companyName = "Банкротство.Консалт",
+            companyIcon = "",
+            companyLocation = "Екатеринбург, Россия",
+            companyDescription = "Банкротство.Консалт - ведущая компания по сопровождению процедур банкротства юридических и физических лиц.",
+            workFormat = "офис",
+            employment = "стажировка",
+            applyingJob = "ТК РФ",
+            schedule = "5/2",
+            workingHours = 8,
+            frequencyOfPayments = "Раз в месяц",
+            experience = "от 0 до 1 года",
+            requiredEducation = "Высшее юридическое или экономическое",
+            recruitmentRequirements = "Знание 127-ФЗ\nПонимание процедур банкротства\nНавыки работы с реестрами",
+            responsibilities = "Ведение реестра кредиторов\nПодготовка документов\nАнализ финансового состояния",
+            conditions = "Наставничество\nВозможность стать арбитражным управляющим\nКорпоративное обучение",
+            keySkills = listOf("Банкротство", "127-ФЗ", "Реестр кредиторов", "Аналитика"),
+            address = "Екатеринбург, ул. Малышева, 51"
+        ),
+        "9" to VacancyDetails(
+            id = "9",
+            title = "Помощник юриста (гражданское право)",
+            incomeLevel = "от 55 000 до 75 000 ₽",
+            companyName = "Юридический центр «Правовед»",
+            companyIcon = "",
+            companyLocation = "Казань, Россия",
+            companyDescription = "Юридический центр Правовед - многопрофильная юридическая компания. Помощь бизнесу и частным лицам.",
+            workFormat = "офис",
+            employment = "полная занятость",
+            applyingJob = "ТК РФ",
+            schedule = "5/2",
+            workingHours = 8,
+            frequencyOfPayments = "2 раза в месяц",
+            experience = "от 0 до 1 года",
+            requiredEducation = "Высшее юридическое (неоконченное)",
+            recruitmentRequirements = "Знание ГК РФ\nПонимание искового производства\nНавыки составления документов",
+            responsibilities = "Помощь в составлении исков\nПодготовка документов в суд\nКонсультирование клиентов",
+            conditions = "Молодой коллектив\nВозможность карьерного роста\nПремии по результатам",
+            keySkills = listOf("Гражданское право", "Иски", "Претензионная работа", "ГК РФ"),
+            address = "Казань, ул. Баумана, 15"
+        ),
+        "10" to VacancyDetails(
+            id = "10",
+            title = "Младший юрист (комплаенс)",
+            incomeLevel = "от 90 000 до 130 000 ₽",
+            companyName = "Сбербанк",
+            companyIcon = "",
+            companyLocation = "Москва, Россия",
+            companyDescription = "Сбербанк - крупнейший банк России. Мы создаем экосистему сервисов для миллионов клиентов.",
+            workFormat = "офис",
+            employment = "полная занятость",
+            applyingJob = "ТК РФ",
+            schedule = "5/2",
+            workingHours = 8,
+            frequencyOfPayments = "2 раза в месяц",
+            experience = "от 0 до 2 лет",
+            requiredEducation = "Высшее юридическое (с отличием приветствуется)",
+            recruitmentRequirements = "Знание 115-ФЗ\nПонимание комплаенс-процедур\nАнглийский язык от Intermediate",
+            responsibilities = "Проверка клиентов\nАнализ рисков\nПодготовка отчетности\nВзаимодействие с контролирующими органами",
+            conditions = "Корпоративный пакет\nРасширенная ДМС\nКорпоративное обучение\nПремии",
+            keySkills = listOf("Комплаенс", "115-ФЗ", "Антикоррупция", "Риск-менеджмент"),
+            address = "Москва, ул. Вавилова, 19"
+        )
+    )
+
     override fun getVacancies(): Flow<List<Vacancy>> = flowOf(mockVacancies)
 
-    override suspend fun getVacancyById(id: String): Vacancy? {
-        return mockVacancies.find { it.id == id }
+    override suspend fun getVacancyDetailsById(id: String): VacancyDetails? {
+        return mockVacancyDetails[id]
     }
 }
