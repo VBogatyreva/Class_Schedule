@@ -57,7 +57,6 @@ import ru.bogatyreva.class_schedule.presentation.ui.theme.LessonCardColor
 import ru.bogatyreva.class_schedule.presentation.ui.theme.TitleText
 import ru.bogatyreva.class_schedule.presentation.ui.theme.White
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CareerScreen(
@@ -170,67 +169,179 @@ fun CareerScreen(
 
                         Spacer(modifier = Modifier.height(24.dp))
 
-                        if (filteredVacancies.isEmpty() && searchQuery.isNotBlank()) {
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(32.dp),
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.Center
-                            ) {
-                                Text(
-                                    text = "Ничего не найдено",
-                                    color = TitleText.copy(alpha = 0.6f),
-                                    fontSize = 16.sp
-                                )
-                                Spacer(modifier = Modifier.height(8.dp))
-                                Text(
-                                    text = "Попробуйте изменить запрос",
-                                    color = TitleText.copy(alpha = 0.4f),
-                                    fontSize = 14.sp
+                        when {
+                            // Случай 1: Вакансий вообще нет и поиск пустой
+                            state.vacancies.isEmpty() && searchQuery.isBlank() -> {
+                                EmptyVacanciesScreen(
+                                    title = "Пока ничего нет...",
+                                    subtitle = "Новые вакансии будут появляться тут"
                                 )
                             }
-                        } else if (filteredVacancies.isEmpty()) {
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(32.dp),
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.Center
-                            ) {
-                                Text(
-                                    text = "Нет доступных вакансий",
-                                    color = TitleText.copy(alpha = 0.6f)
-                                )
-                            }
-                        } else {
-                            LazyColumn(
-                                modifier = Modifier.fillMaxSize(),
-                                contentPadding = androidx.compose.foundation.layout.PaddingValues(
-                                    horizontal = 16.dp,
-                                    vertical = 0.dp
-                                ),
-                                verticalArrangement = Arrangement.spacedBy(12.dp)
-                            ) {
-                                items(filteredVacancies) { vacancy ->
-                                    VacancyCard(
-                                        vacancy = vacancy,
-                                        onClick = {
-                                            viewModel.processCommand(
-                                                CareerCommands.OnVacancyClick(vacancy.id)
-                                            )
-                                            onVacancyClick(vacancy.id)
-                                        }
-                                    )
-                                }
 
-                                item {
-                                    Spacer(modifier = Modifier.height(16.dp))
+                            // Случай 2: Вакансий нет, но пользователь что-то ищет
+                            state.vacancies.isEmpty() && searchQuery.isNotBlank() -> {
+                                EmptySearchResultScreen()
+                            }
+
+                            // Случай 3: Вакансии есть, но поиск не дал результатов
+                            searchQuery.isNotBlank() && filteredVacancies.isEmpty() -> {
+                                EmptySearchResultScreen()
+                            }
+
+                            // Случай 4: Есть вакансии для отображения
+                            else -> {
+                                LazyColumn(
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentPadding = androidx.compose.foundation.layout.PaddingValues(
+                                        horizontal = 16.dp,
+                                        vertical = 0.dp
+                                    ),
+                                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                                ) {
+                                    items(filteredVacancies) { vacancy ->
+                                        VacancyCard(
+                                            vacancy = vacancy,
+                                            onClick = {
+                                                viewModel.processCommand(
+                                                    CareerCommands.OnVacancyClick(vacancy.id)
+                                                )
+                                                onVacancyClick(vacancy.id)
+                                            }
+                                        )
+                                    }
+
+                                    item {
+                                        Spacer(modifier = Modifier.height(16.dp))
+                                    }
                                 }
                             }
                         }
                     }
                 }
+            }
+        }
+    }
+}
+
+// Экран для случая, когда вакансий нет
+@Composable
+fun EmptyVacanciesScreen(
+    title: String,
+    subtitle: String
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(White),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.seach_career),
+            contentDescription = title,
+            modifier = Modifier.size(48.dp)
+        )
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        // Заголовок "Пока ничего нет..."
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleMedium.copy(
+                fontFamily = Inter,
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 16.sp,
+                lineHeight = 24.sp,
+                letterSpacing = 0.15.sp,
+                textAlign = TextAlign.Center,
+                color = Color(0xFF1D1B20)
+            ),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // Подзаголовок "Новые вакансии будут появляться тут"
+        Text(
+            text = subtitle,
+            style = MaterialTheme.typography.bodyMedium.copy(
+                fontFamily = Inter,
+                fontWeight = FontWeight.Normal,
+                fontSize = 14.sp,
+                lineHeight = 20.sp,
+                letterSpacing = 0.sp,
+                textAlign = TextAlign.Center,
+                color = Color(0xFF49454F)
+            ),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+        )
+    }
+}
+
+//Экран для случая, когда по поисковому запросу ничего не найдено
+@Composable
+fun EmptySearchResultScreen() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(20.dp)
+        ) {
+            // Изображение
+            Image(
+                painter = painterResource(id = R.drawable.seach_career),
+                contentDescription = "Поиск",
+                modifier = Modifier.size(48.dp)
+            )
+
+            // Текстовый блок
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(6.dp)
+            ) {
+                // Заголовок
+                Text(
+                    text = "По этому запросу пока нет вакансий",
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontFamily = Inter,
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 16.sp,
+                        lineHeight = 24.sp,
+                        letterSpacing = 0.15.sp,
+                        textAlign = TextAlign.Center,
+                        color = Color(0xFF1D1B20)
+                    ),
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                // Подзаголовок
+                Text(
+                    text = "Попробуйте изменить запрос или загляните позже,\nмы регулярно обновляем вакансии",
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        fontFamily = Inter,
+                        fontWeight = FontWeight.Normal,
+                        fontSize = 14.sp,
+                        lineHeight = 20.sp,
+                        letterSpacing = 0.sp,
+                        textAlign = TextAlign.Center,
+                        color = Color(0xFF1D1B20)
+                    ),
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
         }
     }
