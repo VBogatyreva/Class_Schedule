@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.bogatyreva.class_schedule.domain.model.AuthResult
 import ru.bogatyreva.class_schedule.domain.model.AuthState
+import ru.bogatyreva.class_schedule.domain.repository.AuthRepository
 import ru.bogatyreva.class_schedule.domain.usecase.LoginUseCase
 import ru.bogatyreva.class_schedule.domain.usecase.LogoutUseCase
 import ru.bogatyreva.class_schedule.utils.PhoneNumberFormatter
@@ -18,11 +19,31 @@ import javax.inject.Inject
 @HiltViewModel
 class AuthViewModel @Inject constructor(
     private val loginUseCase: LoginUseCase,
-    private val logoutUseCase: LogoutUseCase
+    private val logoutUseCase: LogoutUseCase,
+    private val authRepository: AuthRepository
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(AuthState())
     val state = _state.asStateFlow()
+
+    init {
+        checkAutoLogin()
+    }
+
+    private fun checkAutoLogin() {
+        viewModelScope.launch {
+            val isAuthenticated = authRepository.isAuthenticated()
+            if (isAuthenticated) {
+                _state.update {
+                    it.copy(
+                        isAuthenticated = true,
+                        isLoading = false
+                    )
+                }
+            }
+        }
+    }
+
 
     fun processCommand(command: AuthCommands) {
         when (command) {

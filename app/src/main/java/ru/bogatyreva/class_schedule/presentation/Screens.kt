@@ -9,5 +9,6 @@ enum class Screens {
     LESSON,
     QRSCAN,
     CAREER,
-    VACANCY_DETAILS
+    VACANCY_DETAILS,
+    PROFILE
 }

@@ -36,6 +36,7 @@ import ru.bogatyreva.class_schedule.presentation.screens.career.CareerViewModel
 import ru.bogatyreva.class_schedule.presentation.screens.lesson.LessonDetailsCommands
 import ru.bogatyreva.class_schedule.presentation.screens.lesson.LessonDetailsScreen
 import ru.bogatyreva.class_schedule.presentation.screens.lesson.LessonDetailsViewModel
+import ru.bogatyreva.class_schedule.presentation.screens.profile.ProfileScreen
 import ru.bogatyreva.class_schedule.presentation.screens.qrscan.QrScanView
 import ru.bogatyreva.class_schedule.presentation.screens.schedule.ErrorMarkDialog
 import ru.bogatyreva.class_schedule.presentation.screens.schedule.MarkDialog
@@ -130,10 +131,7 @@ fun NavigationHost(
                     navController.navigate(Screens.LESSON.name)
                 },
                 onProfileClick = {
-                    // Переход на профиль или выход
-                    authViewModel.processCommand(AuthCommands.Logout)
-                    navController.popBackStack(Screens.SCHEDULE.name, inclusive = true)
-                    navController.navigate(Screens.WELCOME.name)
+                    navController.navigate(Screens.PROFILE.name)
                 },
                 onQrCodeClick = {
                     if (!hasCameraPermission) {
@@ -195,9 +193,7 @@ fun NavigationHost(
                     }
                 },
                 onProfileClick = {
-                    authViewModel.processCommand(AuthCommands.Logout)
-                    navController.popBackStack(Screens.CAREER.name, inclusive = true)
-                    navController.navigate(Screens.WELCOME.name)
+                    navController.navigate(Screens.PROFILE.name)
                 },
                 onScheduleClick = {
                     navController.popBackStack(Screens.SCHEDULE.name, inclusive = false)
@@ -214,7 +210,7 @@ fun NavigationHost(
             LessonDetailsScreen(
                 viewModel = lessonViewModel,
                 onProfileClick = {
-                    navController.navigate(Screens.CAREER.name)
+                    navController.navigate(Screens.PROFILE.name)
                 },
                 onQrCodeClick = {
                     if (!hasCameraPermission) {
@@ -271,9 +267,7 @@ fun NavigationHost(
                     vacancyId = vacancyId,
                     onBackPressed = { navController.popBackStack() },
                     onProfileClick = {
-                        authViewModel.processCommand(AuthCommands.Logout)
-                        navController.popBackStack(Screens.CAREER.name, inclusive = true)
-                        navController.navigate(Screens.WELCOME.name)
+                        navController.navigate(Screens.PROFILE.name)
                     },
                     onScheduleClick = {
                         navController.navigate(Screens.SCHEDULE.name) {
@@ -295,6 +289,35 @@ fun NavigationHost(
                 )
             }
         }
+
+        // Экран профиля
+        composable(route = Screens.PROFILE.name) {
+            ProfileScreen(
+                onLogoutClick = {
+                    authViewModel.processCommand(AuthCommands.Logout)
+                    navController.popBackStack(Screens.PROFILE.name, inclusive = true)
+                    navController.navigate(Screens.WELCOME.name)
+                },
+                onScheduleClick = {
+                    navController.navigate(Screens.SCHEDULE.name) {
+                        popUpTo(Screens.SCHEDULE.name) { inclusive = true }
+                    }
+                },
+                onCareerClick = {
+                    navController.navigate(Screens.CAREER.name) {
+                        popUpTo(Screens.CAREER.name) { inclusive = true }
+                    }
+                },
+                onQrCodeClick = {
+                    if (!hasCameraPermission) {
+                        permissionLauncher.launch(Manifest.permission.CAMERA)
+                    } else {
+                        navController.navigate(route = Screens.QRSCAN.name)
+                    }
+                }
+            )
+        }
+
 
         // Экран QR сканера
         composable(route = Screens.QRSCAN.name) {
