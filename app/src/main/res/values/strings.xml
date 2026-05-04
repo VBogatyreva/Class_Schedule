@@ -24,4 +24,30 @@
     <string name="description_conditions">Условия</string>
     <string name="key_skills_block">Ключевые навыки</string>
     <string name="respond_button_text">Откликнуться</string>
+
+    <!-- Bottom Sheet заголовки и кнопки -->
+    <string name="bottom_sheet_title">Отклик на вакансию</string>
+    <string name="bottom_sheet_loading_text">Отправка отклика…</string>
+    <string name="bottom_sheet_success_title">Успешно!</string>
+    <string name="bottom_sheet_success_message">Отклик отправлен</string>
+    <string name="bottom_sheet_error_title">Что-то пошло не так…</string>
+    <string name="bottom_sheet_error_message">Отклик не отправлен, попробуйте еще раз</string>
+    <string name="bottom_sheet_button_back_to_vacancies">Вернуться к вакансиям</string>
+    <string name="bottom_sheet_button_back">Назад</string>
+    <string name="bottom_sheet_button_respond">Откликнуться</string>
+
+    <!-- Bottom Sheet Поля формы -->
+    <string name="bottom_sheet_resume_section">1. Резюме</string>
+    <string name="bottom_sheet_resume_hint">Ссылка на резюме</string>
+    <string name="bottom_sheet_resume_upload_hint">Или загрузите файл (doc, pdf, txt, rtf)</string>
+    <string name="bottom_sheet_cover_letter_section">2. Сопроводительное письмо</string>
+    <string name="bottom_sheet_cover_letter_hint">Введите текст</string>
+    <string name="bottom_sheet_upload_button">Загрузить файл</string>
+    <string name="bottom_sheet_file_format_error">Неверный формат файла</string>
+    <string name="bottom_sheet_required_star">*</string>
+
+    <!-- Bottom Sheet иконки -->
+    <string name="ic_upload_description">Загрузить</string>
+    <string name="ic_delete_description">Удалить</string>
+
 </resources>

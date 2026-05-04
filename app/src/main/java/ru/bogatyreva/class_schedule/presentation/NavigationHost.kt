@@ -261,46 +261,39 @@ fun NavigationHost(
             route = "${Screens.VACANCY_DETAILS.name}/{vacancyId}",
             arguments = listOf(navArgument("vacancyId") { type = NavType.StringType })
         ) { backStackEntry ->
-            val vacancyId = backStackEntry.arguments?.getString("vacancyId") ?: return@composable
-            val viewModel: VacancyDetailsViewModel = hiltViewModel()
+            val vacancyId = backStackEntry.arguments?.getString("vacancyId")
 
-            VacancyDetailsScreen(
-                viewModel = viewModel,
-                vacancyId = vacancyId,
-                onBackPressed = {
-                    println("🔍 Back pressed")
-                    navController.popBackStack()
-                },
-                onProfileClick = {
-                    println("🔍 Profile clicked")
-                    authViewModel.processCommand(AuthCommands.Logout)
-                    navController.popBackStack(Screens.SCHEDULE.name, inclusive = false)
-                    navController.navigate(Screens.WELCOME.name)
-                },
-                onScheduleClick = {
-                    println("🔍 Schedule clicked")
-                    navController.popBackStack()
-                    navController.navigate(Screens.SCHEDULE.name)
-                },
-                onCareerClick = {
-                    println("🔍 Career clicked")
-                    navController.popBackStack()
-                    navController.navigate(Screens.CAREER.name)
-                },
-                onQrCodeClick = {
-                    println("🔍 STEP 2: QR clicked in NavigationHost for VacancyDetails")
-                    if (!hasCameraPermission) {
-                        println("🔍 STEP 3: No camera permission, requesting...")
-                        permissionLauncher.launch(Manifest.permission.CAMERA)
-                    } else {
-                        println("🔍 STEP 3: Has camera permission, navigating to QR SCAN")
-                        navController.navigate(Screens.QRSCAN.name)
-                    }
-                },
-                onClickRespond = {
-                    Log.d("VacancyDetails", "Отклик на вакансию: $vacancyId")
-                }
-            )
+            if (vacancyId != null) {
+                val viewModel: VacancyDetailsViewModel = hiltViewModel()
+
+                VacancyDetailsScreen(
+                    viewModel = viewModel,
+                    vacancyId = vacancyId,
+                    onBackPressed = { navController.popBackStack() },
+                    onProfileClick = {
+                        authViewModel.processCommand(AuthCommands.Logout)
+                        navController.popBackStack(Screens.CAREER.name, inclusive = true)
+                        navController.navigate(Screens.WELCOME.name)
+                    },
+                    onScheduleClick = {
+                        navController.navigate(Screens.SCHEDULE.name) {
+                            popUpTo(Screens.SCHEDULE.name) { inclusive = true }
+                        }
+                    },
+                    onCareerClick = {
+                        navController.navigate(Screens.CAREER.name) {
+                            popUpTo(Screens.CAREER.name) { inclusive = true }
+                        }
+                    },
+                    onQrCodeClick = {
+                        if (!hasCameraPermission) {
+                            permissionLauncher.launch(Manifest.permission.CAMERA)
+                        } else {
+                            navController.navigate(route = Screens.QRSCAN.name)
+                        }
+                    },
+                )
+            }
         }
 
         // Экран QR сканера

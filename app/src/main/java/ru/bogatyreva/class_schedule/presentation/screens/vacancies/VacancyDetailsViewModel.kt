@@ -3,13 +3,17 @@ package ru.bogatyreva.class_schedule.presentation.screens.vacancies
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import ru.bogatyreva.class_schedule.domain.model.UploadedResumeFile
 import ru.bogatyreva.class_schedule.domain.model.VacancyDetails
 import ru.bogatyreva.class_schedule.domain.repository.CareerRepository
+import ru.bogatyreva.class_schedule.presentation.screens.vacancies.components.RespondState
 import javax.inject.Inject
+import kotlin.random.Random
 
 @HiltViewModel
 class VacancyDetailsViewModel @Inject constructor(
@@ -18,6 +22,10 @@ class VacancyDetailsViewModel @Inject constructor(
 
     private val _state = MutableStateFlow(VacancyDetailsState())
     val state = _state.asStateFlow()
+
+    private val _bottomSheetState = MutableStateFlow<RespondState>(RespondState.Idle)
+    val bottomSheetState = _bottomSheetState.asStateFlow()
+
 
     fun processCommand(command: VacancyDetailsCommands) {
         when (command) {
@@ -61,7 +69,26 @@ class VacancyDetailsViewModel @Inject constructor(
     private fun clearError() {
         _state.update { it.copy(error = null) }
     }
+
+    fun getRandomMockFile(valid: Boolean? = null): UploadedResumeFile {
+        return repository.getRandomMockFile(valid)
+    }
+
+    fun respondToVacancy(vacancyId: String, resumeLink: String, coverLetter: String) {
+        viewModelScope.launch {
+            _bottomSheetState.value = RespondState.Loading
+            delay(1500)
+            val isSuccess = Random.nextBoolean()
+            _bottomSheetState.value = if (isSuccess) RespondState.Success else RespondState.Error
+        }
+    }
+
+    //Сброс состояния Bottom Sheet
+    fun resetBottomSheetState() {
+        _bottomSheetState.value = RespondState.Idle
+    }
 }
+
 
 sealed interface VacancyDetailsCommands {
     data class LoadVacancyDetails(val vacancyId: String) : VacancyDetailsCommands

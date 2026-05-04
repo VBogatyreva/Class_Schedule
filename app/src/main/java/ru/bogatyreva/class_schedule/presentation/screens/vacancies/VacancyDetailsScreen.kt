@@ -24,7 +24,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -42,6 +44,7 @@ import ru.bogatyreva.class_schedule.presentation.screens.vacancies.components.Co
 import ru.bogatyreva.class_schedule.presentation.screens.vacancies.components.DescriptionBlock
 import ru.bogatyreva.class_schedule.presentation.screens.vacancies.components.KeySkillsBlock
 import ru.bogatyreva.class_schedule.presentation.screens.vacancies.components.RespondButton
+import ru.bogatyreva.class_schedule.presentation.screens.vacancies.components.RespondToVacancyBottomSheet
 import ru.bogatyreva.class_schedule.presentation.screens.vacancies.components.VacancyTitleBlock
 import ru.bogatyreva.class_schedule.presentation.ui.theme.Black
 import ru.bogatyreva.class_schedule.presentation.ui.theme.TitleText
@@ -56,10 +59,12 @@ fun VacancyDetailsScreen(
     onProfileClick: () -> Unit = {},
     onScheduleClick: () -> Unit = {},
     onCareerClick: () -> Unit = {},
-    onQrCodeClick: () -> Unit = {},
-    onClickRespond: () -> Unit = {}
+    onQrCodeClick: () -> Unit = {}
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val bottomSheetState by viewModel.bottomSheetState.collectAsStateWithLifecycle()
+
+    var showBottomSheet by remember { mutableStateOf(false) }
 
     LaunchedEffect(vacancyId) {
         viewModel.processCommand(VacancyDetailsCommands.LoadVacancyDetails(vacancyId))
@@ -228,9 +233,39 @@ fun VacancyDetailsScreen(
                         .fillMaxWidth()
                         .align(Alignment.BottomCenter)
                 ) {
-                    RespondButton(onClick = onClickRespond)
+                    RespondButton(
+                        onClick = { showBottomSheet = true }
+                    )
                 }
             }
         }
+    }
+
+    // Bottom Sheet для отклика на вакансию
+    if (showBottomSheet) {
+        RespondToVacancyBottomSheet(
+            onDismiss = {
+                showBottomSheet = false
+                viewModel.resetBottomSheetState()
+            },
+            onSubmit = { resumeLink, coverLetter ->
+                viewModel.respondToVacancy(
+                    vacancyId = vacancyId,
+                    resumeLink = resumeLink,
+                    coverLetter = coverLetter
+                )
+            },
+            onGetRandomFile = { viewModel.getRandomMockFile() },
+            respondState = bottomSheetState,
+            onBackToVacancies = {
+                viewModel.resetBottomSheetState()
+                showBottomSheet = false
+                onCareerClick()
+            },
+            onBack = {
+                viewModel.resetBottomSheetState()
+                // возврат к форме (просто сбрасываем состояние)
+            }
+        )
     }
 }
