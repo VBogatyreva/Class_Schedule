@@ -2,7 +2,6 @@ package ru.bogatyreva.class_schedule.presentation
 
 import android.Manifest
 import android.content.pm.PackageManager
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Spacer
@@ -146,11 +145,6 @@ fun NavigationHost(
                 },
                 onCareerClick = {
                     navController.navigate(Screens.CAREER.name)
-                },
-                onLogoutClick = {
-                    authViewModel.processCommand(AuthCommands.Logout)
-                    navController.popBackStack(Screens.SCHEDULE.name, inclusive = true)
-                    navController.navigate(Screens.WELCOME.name)
                 },
                 funDialog = {
                     // в зависимости от состояния передаем функцию

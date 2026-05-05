@@ -3,8 +3,9 @@ package ru.bogatyreva.class_schedule.presentation.screens.schedule
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -15,12 +16,14 @@ import ru.bogatyreva.class_schedule.domain.usecase.GetLastLessonEndTimeUseCase
 import ru.bogatyreva.class_schedule.domain.usecase.GetLessonsCountForDateUseCase
 import ru.bogatyreva.class_schedule.domain.usecase.GetLessonsForDateUseCase
 import ru.bogatyreva.class_schedule.domain.usecase.GetTodayUseCase
+import ru.bogatyreva.class_schedule.utils.LessonTimeUtils
 import ru.bogatyreva.class_schedule.utils.isSameDay
 import java.time.Duration
 import java.time.Instant
+import java.time.LocalDate
+import java.time.LocalTime
 import java.time.ZoneId
 import javax.inject.Inject
-import kotlin.compareTo
 
 @HiltViewModel
 class ScheduleViewModel @Inject constructor(
@@ -44,8 +47,52 @@ class ScheduleViewModel @Inject constructor(
     private val _monthYear = MutableStateFlow("")
     val monthYear = _monthYear.asStateFlow()
 
+    // Текущее время для подсветки уроков
+    private val _currentTime = MutableStateFlow(LocalTime.now())
+    val currentTime = _currentTime.asStateFlow()
+
+    // Таймер для обновления подсветки
+    private var timerJob: Job? = null
+
     init {
         loadInitialData()
+        startTimeUpdater()
+    }
+
+    // Запускаем таймер для обновления текущего времени
+    private fun startTimeUpdater() {
+        timerJob = viewModelScope.launch {
+            while (true) {
+                _currentTime.value = LocalTime.now()
+                updateLessonsHighlight()
+                delay(60000) // Обновляем каждую минуту
+            }
+        }
+    }
+
+    // Обновляем подсветку уроков на основе текущего времени
+    private fun updateLessonsHighlight() {
+        val currentState = _state.value
+        val today = LocalDate.now()
+
+        // Проверяем, что выбранная дата - сегодня
+        val selectedLocalDate = currentState.selectedDate
+            .atZone(ZoneId.systemDefault())
+            .toLocalDate()
+
+        val highlightedLessonId = if (selectedLocalDate == today) {
+            LessonTimeUtils.getCurrentOrNextLessonId(
+                lessons = currentState.lessons,
+                currentTime = _currentTime.value,
+                currentDate = today
+            )
+        } else {
+            null // Для других дат не подсвечиваем
+        }
+
+        _state.update {
+            it.copy(highlightedLessonId = highlightedLessonId)
+        }
     }
 
     // Загрузка начальных данных
@@ -73,7 +120,8 @@ class ScheduleViewModel @Inject constructor(
             _state.update {
                 it.copy(
                     isLoading = true,
-                    selectedDate = date
+                    selectedDate = date,
+                    highlightedLessonId = null // Сбрасываем подсветку при смене даты
                 )
             }
 
@@ -96,6 +144,9 @@ class ScheduleViewModel @Inject constructor(
                             isLoading = false
                         )
                     }
+
+                    // После загрузки уроков обновляем подсветку
+                    updateLessonsHighlight()
                 }
 
             } catch (e: Exception) {
@@ -213,6 +264,11 @@ class ScheduleViewModel @Inject constructor(
         }
     }
 
+    override fun onCleared() {
+        super.onCleared()
+        timerJob?.cancel() // Останавливаем таймер при уничтожении ViewModel
+    }
+
     companion object {
         private const val WEEK_DAYS = 7L
     }
@@ -236,10 +292,10 @@ data class ScheduleScreenState(
     val lessons: List<Lesson> = emptyList(),           // Уроки на выбранную дату
     val selectedDate: Instant = Instant.now(),         // Выбранная дата
     val lessonsCount: Int = 0,                         // Количество пар на день
-    val lastLessonEndTime: String? = null,             // Время окончания последней пары ("16:30")
+    val lastLessonEndTime: String? = null,             // Время окончания последней пары
     val isLoading: Boolean = false,                    // Флаг загрузки
-    val error: String? = null                          // Сообщение об ошибке
-
+    val error: String? = null,                         // Сообщение об ошибке
+    val highlightedLessonId: Int? = null               // ID подсвеченного урока
 ) {
     // Проверка: нет уроков, не идет загрузка, нет ошибок
     val isEmptyState: Boolean

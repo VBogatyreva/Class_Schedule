@@ -86,11 +86,18 @@ import ru.bogatyreva.class_schedule.presentation.ui.theme.Transparent
 import ru.bogatyreva.class_schedule.presentation.ui.theme.WeekdaysText
 import ru.bogatyreva.class_schedule.presentation.ui.theme.WeekendsText
 import ru.bogatyreva.class_schedule.presentation.ui.theme.White
+import ru.bogatyreva.class_schedule.utils.LessonTimeUtils
 import ru.bogatyreva.class_schedule.utils.isSameDay
 import java.time.Instant
+import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Locale
+import kotlin.compareTo
+import kotlin.text.compareTo
+import kotlin.text.get
+import kotlin.text.toLong
+import kotlin.toString
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -101,11 +108,11 @@ fun ScheduleScreen(
     onScheduleClick: () -> Unit = {},
     onCareerClick: () -> Unit = {},
     onLessonClick: (Int) -> Unit = {},
-    onLogoutClick: () -> Unit = {},
     funDialog: @Composable () -> Unit = { }
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val calendarDates by viewModel.calendarDates.collectAsStateWithLifecycle()
+    val currentTime by viewModel.currentTime.collectAsStateWithLifecycle()
 
     // Получаем ширину экрана для расчета
     val configuration = LocalConfiguration.current
@@ -118,7 +125,7 @@ fun ScheduleScreen(
 
     // Флаг для предотвращения циклической прокрутки - на будущее для бесконечной прокрутки календаря
     var isProgrammaticScroll by remember { mutableStateOf(false) }
-
+    val todayLocalDate = LocalDate.now()
 
     // Прокручиваем к выбранной дате - но в начало ставим понедельник
     LaunchedEffect(state.selectedDate) {
@@ -495,33 +502,37 @@ fun ScheduleScreen(
 
                     } else {
                         LazyColumn(
-                            modifier = Modifier
-                                .weight(1f),
+                            modifier = Modifier.weight(1f),
                             verticalArrangement = Arrangement.spacedBy(4.dp)
                         ) {
                             itemsIndexed(state.lessons) { index, lesson ->
+                                val isHighlighted = if (isSameDay(state.selectedDate, Instant.now())) {
+                                    LessonTimeUtils.isLessonHighlighted(
+                                        lesson = lesson,
+                                        lessons = state.lessons,
+                                        currentTime = currentTime,
+                                        currentDate = todayLocalDate
+                                    )
+                                } else {
+                                    false
+                                }
+
                                 LessonCard(
                                     lesson = lesson,
-                                    onClick = {
-                                        // Переход к деталям урока
-                                        onLessonClick(lesson.id)
-                                    }
+                                    onClick = { onLessonClick(lesson.id) },
+                                    isHighlighted = isHighlighted  // ← ДОБАВИТЬ ЭТУ СТРОКУ
                                 )
 
                                 if (index < state.lessons.size - 1) {
                                     val nextLesson = state.lessons[index + 1]
                                     val breakDuration = lesson.getBreakDuration()
-
                                     if (breakDuration != null) {
-
                                         Spacer(modifier = Modifier.height(4.dp))
-
                                         BreakIndicator(
                                             startTime = lesson.endTime,
                                             endTime = nextLesson.startTime,
                                             duration = breakDuration
                                         )
-
                                         Spacer(modifier = Modifier.height(4.dp))
                                     }
                                 }
@@ -697,8 +708,14 @@ fun formatMonthYear(date: Instant): String {
 @Composable
 fun LessonCard(
     lesson: Lesson,
-    onClick: () -> Unit = {}
+    onClick: () -> Unit = {},
+    isHighlighted: Boolean = false
 ) {
+    val cardBackgroundColor = if (isHighlighted) {
+        Color(0xFFE5F3FF)
+    } else {
+        LessonCardColor
+    }
 
     Card(
         modifier = Modifier
@@ -710,7 +727,7 @@ fun LessonCard(
             },
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(
-            containerColor = LessonCardColor,
+            containerColor = cardBackgroundColor
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {

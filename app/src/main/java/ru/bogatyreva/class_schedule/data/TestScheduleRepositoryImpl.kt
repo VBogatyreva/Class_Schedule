@@ -13,6 +13,7 @@ import ru.bogatyreva.class_schedule.domain.model.LessonType
 import ru.bogatyreva.class_schedule.domain.model.SubmittedFile
 import ru.bogatyreva.class_schedule.domain.model.SubmittedMaterial
 import ru.bogatyreva.class_schedule.domain.repository.ScheduleRepository
+import java.time.Duration
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -137,8 +138,8 @@ class TestScheduleRepositoryImpl @Inject constructor(
         Lesson(
             id = 3,
             pairNumber = 1,
-            startTime = "10:00",
-            endTime = "11:30",
+            startTime = "09:00",
+            endTime = "10:30",
             discipline = "Римское право",
             audience = "203",
             originalTeacher = "Романова Елена Викторовна",
@@ -168,8 +169,8 @@ class TestScheduleRepositoryImpl @Inject constructor(
         Lesson(
             id = 4,
             pairNumber = 2,
-            startTime = "11:45",
-            endTime = "13:15",
+            startTime = "10:45",
+            endTime = "12:15",
             discipline = "Международное право",
             audience = "405",
             originalTeacher = "Иванов Иван Иванович",
@@ -195,8 +196,8 @@ class TestScheduleRepositoryImpl @Inject constructor(
         Lesson(
             id = 5,
             pairNumber = 1,
-            startTime = "14:00",
-            endTime = "15:30",
+            startTime = "09:00",
+            endTime = "10:30",
             discipline = "Государственное регулирование",
             audience = "306",
             originalTeacher = "Петров Петр Петрович",
@@ -257,8 +258,8 @@ class TestScheduleRepositoryImpl @Inject constructor(
         Lesson(
             id = 7,
             pairNumber = 1,
-            startTime = "13:00",
-            endTime = "14:30",
+            startTime = "14:15",
+            endTime = "15:45",
             discipline = "Судебная медицина",
             audience = null,
             originalTeacher = "Волков Сергей Петрович",
@@ -277,15 +278,78 @@ class TestScheduleRepositoryImpl @Inject constructor(
                 submittedFiles = emptyList()
             )
         ),
+        Lesson(
+            id = 8,
+            pairNumber = 2,
+            startTime = "16:00",
+            endTime = "17:30",
+            discipline = "Клиническая психология",
+            audience = "501",
+            originalTeacher = "Медведева Ирина Сергеевна",
+            date = getDateForDayOffset(4),
+            lessonType = LessonType.LECTURE,
+            status = LessonStatus.NORMAL,
+            lessonMaterials = listOf(
+                LessonMaterial("1", "Психология.pdf", "2.5 MB", "", "PDF")
+            ),
+            assignment = Assignment(
+                id = "8",
+                title = "Клиническая психология",
+                description = "Подготовьте доклад о методах психологической диагностики.",
+                deadline = "10 апреля 2026, 23:59",
+                submitted = false,
+                submittedFiles = emptyList()
+            )
+        ),
+        Lesson(
+            id = 9,
+            pairNumber = 3,
+            startTime = "17:45",
+            endTime = "19:15",
+            discipline = "Правовая статистика",
+            audience = "402",
+            originalTeacher = "Соболев Дмитрий Викторович",
+            date = getDateForDayOffset(4),
+            lessonType = LessonType.SEMINAR,
+            status = LessonStatus.NORMAL,
+            lessonMaterials = emptyList(),
+            assignment = Assignment(
+                id = "9",
+                title = "Правовая статистика",
+                description = "Решите задачи по статистическому анализу данных.",
+                deadline = "10 апреля 2026, 23:59",
+                submitted = false,
+                submittedFiles = emptyList()
+            )
+        ),
+        Lesson(
+            id = 10,
+            pairNumber = 4,
+            startTime = "19:30",
+            endTime = "21:00",
+            discipline = "Консультационный семинар",
+            audience = "online",
+            originalTeacher = "Кузнецова Анна Павловна",
+            date = getDateForDayOffset(4),
+            lessonType = LessonType.SEMINAR,
+            status = LessonStatus.NORMAL,
+            isOnline = true,
+            onlineLink = "https://meet.google.com/xxx-yyy-zzz",
+            lessonMaterials = listOf(
+                LessonMaterial("1", "Материалы_семинара.pdf", "1.8 MB", "", "PDF")
+            ),
+            assignment = null
+        ),
+
         // Суббота (4 апреля) - выходной, уроков нет
         // Воскресенье (5 апреля) - выходной, уроков нет
 
         // 6 апреля (Понедельник)
         Lesson(
-            id = 8,
+            id = 11,
             pairNumber = 1,
-            startTime = "10:00",
-            endTime = "11:45",
+            startTime = "09:00",
+            endTime = "10:30",
             discipline = "Международное право",
             audience = "405",
             originalTeacher = "Иванов Иван Иванович",
@@ -298,7 +362,7 @@ class TestScheduleRepositoryImpl @Inject constructor(
                 LessonMaterial("3", "Дополнительные_материалы.docx", "0.9 MB", "", "DOCX")
             ),
             assignment = Assignment(
-                id = "8",
+                id = "10",
                 title = "Международное право",
                 description = "Напишите эссе на тему 'Нормы международного права' объемом 2-3 страницы.",
                 deadline = "30 марта 2026, 23:59",
@@ -307,10 +371,10 @@ class TestScheduleRepositoryImpl @Inject constructor(
             )
         ),
         Lesson(
-            id = 9,
+            id = 12,
             pairNumber = 2,
-            startTime = "12:00",
-            endTime = "13:45",
+            startTime = "10:45",
+            endTime = "12:15",
             discipline = "Государственное регулирование",
             audience = "306",
             originalTeacher = "Петров Петр Петрович",
@@ -321,7 +385,7 @@ class TestScheduleRepositoryImpl @Inject constructor(
                 LessonMaterial("1", "Гос_регулирование_лекция.pdf", "2.2 MB", "", "PDF")
             ),
             assignment = Assignment(
-                id = "9",
+                id = "11",
                 title = "Государственное регулирование",
                 description = "Подготовьте доклад на тему 'Государственное регулирование экономики'.",
                 deadline = "3 апреля 2026, 23:59",
@@ -330,10 +394,10 @@ class TestScheduleRepositoryImpl @Inject constructor(
             )
         ),
         Lesson(
-            id = 10,
+            id = 13,
             pairNumber = 3,
-            startTime = "14:00",
-            endTime = "15:45",
+            startTime = "12:30",
+            endTime = "14:00",
             discipline = "Уголовное право",
             audience = "205",
             originalTeacher = "Смирнов Алексей Игоревич",
@@ -342,7 +406,7 @@ class TestScheduleRepositoryImpl @Inject constructor(
             status = LessonStatus.CANCELLED,
             lessonMaterials = emptyList(),
             assignment = Assignment(
-                id = "10",
+                id = "12",
                 title = "Уголовное право",
                 description = "Подготовьте ответы на вопросы по теме 'Преступление и наказание'.",
                 deadline = "9 апреля 2026, 23:59",
@@ -351,10 +415,10 @@ class TestScheduleRepositoryImpl @Inject constructor(
             )
         ),
         Lesson(
-            id = 11,
+            id = 14,
             pairNumber = 4,
-            startTime = "16:00",
-            endTime = "17:45",
+            startTime = "14:15",
+            endTime = "15:45",
             discipline = "История России",
             audience = "408",
             originalTeacher = "Васильев Игорь Александрович",
@@ -363,7 +427,7 @@ class TestScheduleRepositoryImpl @Inject constructor(
             status = LessonStatus.CANCELLED,
             lessonMaterials = emptyList(),
             assignment = Assignment(
-                id = "11",
+                id = "13",
                 title = "История России",
                 description = "Подготовьте эссе на тему 'Россия в XIX веке'.",
                 deadline = "10 апреля 2026, 23:59",
@@ -374,10 +438,10 @@ class TestScheduleRepositoryImpl @Inject constructor(
 
         // 7 апреля (Вторник)
         Lesson(
-            id = 12,
+            id = 15,
             pairNumber = 1,
-            startTime = "10:00",
-            endTime = "11:45",
+            startTime = "09:00",
+            endTime = "10:30",
             discipline = "Гражданское право",
             audience = "301",
             originalTeacher = "Петрова Елена Сергеевна",
@@ -388,7 +452,7 @@ class TestScheduleRepositoryImpl @Inject constructor(
                 LessonMaterial("1", "Гражданское_право_материалы.pdf", "3.5 MB", "", "PDF")
             ),
             assignment = Assignment(
-                id = "12",
+                id = "14",
                 title = "Гражданское право",
                 description = "Решите задачи по гражданскому праву (задачи в приложении).",
                 deadline = "4 апреля 2026, 23:59",
@@ -397,10 +461,10 @@ class TestScheduleRepositoryImpl @Inject constructor(
             )
         ),
         Lesson(
-            id = 13,
+            id = 16,
             pairNumber = 2,
-            startTime = "12:00",
-            endTime = "13:45",
+            startTime = "10:45",
+            endTime = "12:15",
             discipline = "Административное право",
             audience = "302",
             originalTeacher = "Соколов Дмитрий Иванович",
@@ -411,7 +475,7 @@ class TestScheduleRepositoryImpl @Inject constructor(
                 LessonMaterial("1", "Административное_право.pptx", "1.9 MB", "", "PPTX")
             ),
             assignment = Assignment(
-                id = "13",
+                id = "15",
                 title = "Административное право",
                 description = "Составьте схему 'Система административного права'.",
                 deadline = "6 апреля 2026, 23:59",
@@ -420,10 +484,10 @@ class TestScheduleRepositoryImpl @Inject constructor(
             )
         ),
         Lesson(
-            id = 14,
+            id = 17,
             pairNumber = 3,
-            startTime = "14:00",
-            endTime = "15:45",
+            startTime = "12:30",
+            endTime = "14:00",
             discipline = "Философия",
             audience = "103",
             originalTeacher = "Кравцова Ирина Андреевна",
@@ -432,7 +496,7 @@ class TestScheduleRepositoryImpl @Inject constructor(
             status = LessonStatus.NORMAL,
             lessonMaterials = emptyList(),
             assignment = Assignment(
-                id = "14",
+                id = "16",
                 title = "Философия",
                 description = "Напишите реферат на тему 'Античная философия'.",
                 deadline = "10 апреля 2026, 23:59",
@@ -443,10 +507,10 @@ class TestScheduleRepositoryImpl @Inject constructor(
 
         // 8 апреля (Среда)
         Lesson(
-            id = 15,
+            id = 18,
             pairNumber = 1,
-            startTime = "10:00",
-            endTime = "11:45",
+            startTime = "09:00",
+            endTime = "10:30",
             discipline = "Экологическое право",
             audience = "201",
             originalTeacher = "Козлова Анна Александровна",
@@ -457,16 +521,19 @@ class TestScheduleRepositoryImpl @Inject constructor(
                 LessonMaterial("1", "Экологическое_право.pdf", "2.8 MB", "", "PDF")
             ),
             assignment = Assignment(
-                id = "15", title = "Экологическое право",
+                id = "17",
+                title = "Экологическое право",
                 description = "Напишите эссе на тему 'Экологические проблемы современности'.",
-                deadline = "7 апреля 2026, 23:59", submitted = false, submittedFiles = emptyList()
+                deadline = "7 апреля 2026, 23:59",
+                submitted = false,
+                submittedFiles = emptyList()
             )
         ),
         Lesson(
-            id = 16,
+            id = 19,
             pairNumber = 2,
-            startTime = "12:00",
-            endTime = "13:45",
+            startTime = "10:45",
+            endTime = "12:15",
             discipline = "Социология",
             audience = "608",
             originalTeacher = "Орлова Татьяна Васильевна",
@@ -477,10 +544,10 @@ class TestScheduleRepositoryImpl @Inject constructor(
             assignment = null
         ),
         Lesson(
-            id = 17,
+            id = 20,
             pairNumber = 3,
-            startTime = "14:00",
-            endTime = "15:45",
+            startTime = "12:30",
+            endTime = "14:00",
             discipline = "Трудовое право",
             audience = "202",
             originalTeacher = "Николаев Петр Сергеевич",
@@ -493,10 +560,10 @@ class TestScheduleRepositoryImpl @Inject constructor(
 
         // 9 апреля (Четверг)
         Lesson(
-            id = 18,
+            id = 21,
             pairNumber = 1,
-            startTime = "10:00",
-            endTime = "11:45",
+            startTime = "09:00",
+            endTime = "10:30",
             discipline = "Финансовое право",
             audience = "401",
             originalTeacher = "Зайцева Ольга Викторовна",
@@ -507,16 +574,19 @@ class TestScheduleRepositoryImpl @Inject constructor(
                 LessonMaterial("1", "Финансовое_право_лекция.pdf", "3.1 MB", "", "PDF")
             ),
             assignment = Assignment(
-                id = "18", title = "Финансовое право",
+                id = "18",
+                title = "Финансовое право",
                 description = "Подготовьте анализ налоговой системы РФ.",
-                deadline = "8 апреля 2026, 23:59", submitted = false, submittedFiles = emptyList()
+                deadline = "8 апреля 2026, 23:59",
+                submitted = false,
+                submittedFiles = emptyList()
             )
         ),
         Lesson(
-            id = 19,
+            id = 22,
             pairNumber = 2,
-            startTime = "12:00",
-            endTime = "13:45",
+            startTime = "10:45",
+            endTime = "12:15",
             discipline = "Государственное регулирование",
             audience = "306",
             originalTeacher = "Петров Петр Петрович",
@@ -528,16 +598,19 @@ class TestScheduleRepositoryImpl @Inject constructor(
                 LessonMaterial("1", "Гос_регулирование_замена.pdf", "1.5 MB", "", "PDF")
             ),
             assignment = Assignment(
-                id = "19", title = "Государственное регулирование (замена)",
+                id = "19",
+                title = "Государственное регулирование (замена)",
                 description = "Проработайте материалы по теме 'Государственное регулирование'.",
-                deadline = "9 апреля 2026, 23:59", submitted = false, submittedFiles = emptyList()
+                deadline = "9 апреля 2026, 23:59",
+                submitted = false,
+                submittedFiles = emptyList()
             )
         ),
         Lesson(
-            id = 20,
+            id = 23,
             pairNumber = 3,
-            startTime = "14:00",
-            endTime = "15:45",
+            startTime = "12:30",
+            endTime = "14:00",
             discipline = "Государственное регулирование",
             audience = "306",
             originalTeacher = "Петров Петр Петрович",
@@ -550,10 +623,10 @@ class TestScheduleRepositoryImpl @Inject constructor(
 
         // 10 апреля (Пятница)
         Lesson(
-            id = 21,
+            id = 24,
             pairNumber = 1,
-            startTime = "10:00",
-            endTime = "11:45",
+            startTime = "14:15",
+            endTime = "15:45",
             discipline = "Налоговое право",
             audience = "402",
             originalTeacher = "Павлов Андрей Игоревич",
@@ -564,10 +637,10 @@ class TestScheduleRepositoryImpl @Inject constructor(
             assignment = null
         ),
         Lesson(
-            id = 22,
+            id = 25,
             pairNumber = 2,
-            startTime = "12:00",
-            endTime = "13:45",
+            startTime = "16:00",
+            endTime = "17:30",
             discipline = "Административное право",
             audience = "302",
             originalTeacher = "Соколов Дмитрий Иванович",
@@ -577,13 +650,60 @@ class TestScheduleRepositoryImpl @Inject constructor(
             lessonMaterials = emptyList(),
             assignment = null
         ),
+        Lesson(
+            id = 26,
+            pairNumber = 3,
+            startTime = "17:45",
+            endTime = "19:15",
+            discipline = "Криминология",
+            audience = "205",
+            originalTeacher = "Воробьев Сергей Николаевич",
+            date = getDateForDayOffset(11),
+            lessonType = LessonType.LECTURE,
+            status = LessonStatus.NORMAL,
+            lessonMaterials = listOf(
+                LessonMaterial("1", "Криминология.pdf", "3.2 MB", "", "PDF")
+            ),
+            assignment = Assignment(
+                id = "20",
+                title = "Криминология",
+                description = "Подготовьте доклад о причинах преступности.",
+                deadline = "17 апреля 2026, 23:59",
+                submitted = false,
+                submittedFiles = emptyList()
+            )
+        ),
+        Lesson(
+            id = 27,
+            pairNumber = 4,
+            startTime = "19:30",
+            endTime = "21:00",
+            discipline = "Юридическая психология",
+            audience = "online",
+            originalTeacher = "Федотова Екатерина Владимировна",
+            date = getDateForDayOffset(11),
+            lessonType = LessonType.SEMINAR,
+            status = LessonStatus.NORMAL,
+            isOnline = true, onlineLink = "https://meet.google.com/aaa-bbb-ccc",
+            lessonMaterials = listOf(
+                LessonMaterial("1", "Психология.pdf", "2.1 MB", "", "PDF")
+            ),
+            assignment = Assignment(
+                id = "21",
+                title = "Юридическая психология",
+                description = "Напишите эссе на тему 'Психология преступника'.",
+                deadline = "17 апреля 2026, 23:59",
+                submitted = false,
+                submittedFiles = emptyList()
+            )
+        ),
 
         // 11 апреля (Суббота)
         Lesson(
-            id = 23,
+            id = 28,
             pairNumber = 1,
-            startTime = "10:00",
-            endTime = "11:45",
+            startTime = "09:00",
+            endTime = "10:30",
             discipline = "Спортивное право",
             audience = "501",
             originalTeacher = "Иванов Петр Петрович",
@@ -595,185 +715,6 @@ class TestScheduleRepositoryImpl @Inject constructor(
         ),
 
         // Воскресенье (12 апреля) - выходной, уроков нет
-
-        // 13 апреля (Понедельник)
-        Lesson(
-            id = 24,
-            pairNumber = 1,
-            startTime = "10:00",
-            endTime = "11:30",
-            discipline = "Международное частное право",
-            audience = "405",
-            originalTeacher = "Холодов Игорь Павлович",
-            date = getDateForDayOffset(14),
-            lessonType = LessonType.LECTURE,
-            status = LessonStatus.NORMAL,
-            lessonMaterials = listOf(
-                LessonMaterial("1", "Международное_частное_право.pdf", "2.5 MB", "", "PDF")
-            ),
-            assignment = Assignment(
-                id = "24", title = "Международное частное право",
-                description = "Подготовьте доклад о коллизионных нормах.",
-                deadline = "10 апреля 2026, 23:59", submitted = false, submittedFiles = emptyList()
-            )
-        ),
-        Lesson(
-            id = 25,
-            pairNumber = 2,
-            startTime = "11:45",
-            endTime = "13:15",
-            discipline = "Международное частное право",
-            audience = "405",
-            originalTeacher = "Холодов Игорь Павлович",
-            date = getDateForDayOffset(14),
-            lessonType = LessonType.SEMINAR,
-            status = LessonStatus.NORMAL,
-            lessonMaterials = emptyList(),
-            assignment = null
-        ),
-
-        // 14 апреля (Вторник)
-        Lesson(
-            id = 26,
-            pairNumber = 1,
-            startTime = "12:00",
-            endTime = "13:30",
-            discipline = "Банковское право",
-            audience = "302",
-            originalTeacher = "Воронова Ольга Дмитриевна",
-            date = getDateForDayOffset(15),
-            lessonType = LessonType.LECTURE,
-            status = LessonStatus.NORMAL,
-            lessonMaterials = listOf(
-                LessonMaterial("1", "Банковское_право_лекция.pdf", "2.2 MB", "", "PDF")
-            ),
-            assignment = Assignment(
-                id = "26", title = "Банковское право",
-                description = "Проанализируйте банковскую систему РФ.",
-                deadline = "11 апреля 2026, 23:59", submitted = false, submittedFiles = emptyList()
-            )
-        ),
-        Lesson(
-            id = 27,
-            pairNumber = 2,
-            startTime = "13:45",
-            endTime = "15:15",
-            discipline = "Налоговое право",
-            audience = "402",
-            originalTeacher = "Павлов Андрей Игоревич",
-            date = getDateForDayOffset(15),
-            lessonType = LessonType.SEMINAR,
-            status = LessonStatus.SUBSTITUTION,
-            substitutionTeacher = "Сидоров Петр Иванович",
-            lessonMaterials = listOf(
-                LessonMaterial("1", "Налоговое_право_замена.pdf", "1.8 MB", "", "PDF")
-            ),
-            assignment = Assignment(
-                id = "27", title = "Налоговое право (замена)",
-                description = "Изучите материалы по налоговым льготам.",
-                deadline = "12 апреля 2026, 23:59", submitted = false, submittedFiles = emptyList()
-            )
-        ),
-
-        // 15 апреля (Среда)
-        Lesson(
-            id = 28,
-            pairNumber = 1,
-            startTime = "09:00",
-            endTime = "10:30",
-            discipline = "Налоговое право",
-            audience = "201",
-            originalTeacher = "Павлов Андрей Игоревич",
-            date = getDateForDayOffset(16),
-            lessonType = LessonType.LECTURE,
-            status = LessonStatus.CANCELLED,
-            lessonMaterials = emptyList(),
-            assignment = null
-        ),
-        Lesson(
-            id = 29,
-            pairNumber = 2,
-            startTime = "10:45",
-            endTime = "12:15",
-            discipline = "Арбитражный процесс",
-            audience = "403",
-            originalTeacher = "Наумов Владимир Николаевич",
-            date = getDateForDayOffset(16),
-            lessonType = LessonType.SEMINAR,
-            status = LessonStatus.NORMAL,
-            lessonMaterials = emptyList(),
-            assignment = null
-        ),
-
-        // 16 апреля (Четверг)
-        Lesson(
-            id = 30,
-            pairNumber = 1,
-            startTime = "14:00",
-            endTime = "15:30",
-            discipline = "Арбитражный процесс",
-            audience = "403",
-            originalTeacher = "Наумов Владимир Николаевич",
-            date = getDateForDayOffset(17),
-            lessonType = LessonType.LECTURE,
-            status = LessonStatus.NORMAL,
-            lessonMaterials = emptyList(),
-            assignment = null
-        ),
-
-        // 17 апреля (Пятница)
-        Lesson(
-            id = 31,
-            pairNumber = 1,
-            startTime = "16:00",
-            endTime = "17:30",
-            discipline = "Право социального обеспечения",
-            audience = "207",
-            originalTeacher = "Куликова Мария Ивановна",
-            date = getDateForDayOffset(18),
-            lessonType = LessonType.LECTURE,
-            status = LessonStatus.NORMAL,
-            lessonMaterials = listOf(
-                LessonMaterial("1", "Право_соц_обеспечения.pdf", "2.9 MB", "", "PDF")
-            ),
-            assignment = Assignment(
-                id = "31", title = "Право социального обеспечения",
-                description = "Подготовьте реферат о пенсионной системе.",
-                deadline = "13 апреля 2026, 23:59", submitted = false, submittedFiles = emptyList()
-            )
-        ),
-        Lesson(
-            id = 32,
-            pairNumber = 2,
-            startTime = "17:45",
-            endTime = "19:15",
-            discipline = "Право социального обеспечения",
-            audience = "207",
-            originalTeacher = "Куликова Мария Ивановна",
-            date = getDateForDayOffset(18),
-            lessonType = LessonType.SEMINAR,
-            status = LessonStatus.NORMAL,
-            lessonMaterials = emptyList(),
-            assignment = null
-        ),
-
-        // 18 апреля (Суббота)
-        Lesson(
-            id = 33,
-            pairNumber = 1,
-            startTime = "10:00",
-            endTime = "11:30",
-            discipline = "Спортивное право",
-            audience = "501",
-            originalTeacher = "Иванов Петр Петрович",
-            date = getDateForDayOffset(19),
-            lessonType = LessonType.LECTURE,
-            status = LessonStatus.NORMAL,
-            lessonMaterials = emptyList(),
-            assignment = null
-        ),
-
-        // Воскресенье (19 апреля) - выходной, уроков нет
     )
 
     // Получаю дату с фиксированным смещением от понедельника 30.03.2026
@@ -782,18 +723,41 @@ class TestScheduleRepositoryImpl @Inject constructor(
     }
 
     override fun getLessonsForDate(date: Instant): Flow<List<Lesson>> {
+        // Для дат до 30 марта 2026 возвращаем пустой список
+        val targetLocalDate = date.atZone(ZoneId.systemDefault()).toLocalDate()
+        val startDate = LocalDate.of(2026, 3, 30)
+        val endDate = LocalDate.of(2026, 5, 31)
+
+        if (targetLocalDate.isBefore(startDate) || targetLocalDate.isAfter(endDate)) {
+            return flowOf(emptyList())
+        }
+
+        // Вычисляем сдвиг в 14-дневном цикле
+        val daysBetween = Duration.between(fixedDate, date).toDays()
+        val offsetInCycle = ((daysBetween % 14) + 14).toInt() % 14
+
         val lessonsForDate = mockLessons.filter { lesson ->
-            isSameDay(lesson.date, date)
+            val lessonOffset = Duration.between(fixedDate, lesson.date).toDays()
+            (lessonOffset % 14 + 14).toInt() % 14 == offsetInCycle
+        }.map { lesson ->
+            lesson.copy(date = targetLocalDate.atStartOfDay(ZoneId.systemDefault()).toInstant())
         }.sortedBy { it.pairNumber }
-        return flowOf(lessonsForDate)
+
+        // заполняем nextLessonStartTime для расчета перемен
+        val enrichedLessons = lessonsForDate.mapIndexed { index, lesson ->
+            if (index < lessonsForDate.size - 1) {
+                lesson.copy(nextLessonStartTime = lessonsForDate[index + 1].startTime)
+            } else {
+                lesson.copy(nextLessonStartTime = null)
+            }
+        }
+        return flowOf(enrichedLessons)
     }
 
     override suspend fun getMonthYear(date: Instant): String {
         val localDate = date.atZone(ZoneId.systemDefault()).toLocalDate()
         val month = localDate.month.getDisplayName(TextStyle.FULL, Locale("ru"))
-        val year = localDate.year
-        // "Апрель 2026" - с заглавной буквы
-        return "$month $year".replaceFirstChar {
+        return "$month ${localDate.year}".replaceFirstChar {
             if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString()
         }
     }
@@ -804,17 +768,31 @@ class TestScheduleRepositoryImpl @Inject constructor(
 
     override suspend fun getCalendarDates(centerDate: Instant): List<Instant> {
         val localDate = centerDate.atZone(ZoneId.systemDefault()).toLocalDate()
+
+        // Фиксируем диапазон с 30 марта по 31 мая 2026
+        val startDate = LocalDate.of(2026, 3, 30)
+        val endDate = LocalDate.of(2026, 5, 31)
+
+        // Ограничиваем центр даты этим диапазоном
+        val clampedDate = when {
+            localDate.isBefore(startDate) -> startDate
+            localDate.isAfter(endDate) -> endDate
+            else -> localDate
+        }
+
         // Находим понедельник текущей недели
-        val monday = localDate.minusDays((localDate.dayOfWeek.value - 1).toLong())
+        val monday = clampedDate.minusDays((clampedDate.dayOfWeek.value - 1).toLong())
 
-        // Показываем 5 недель (35 дней) для возможности прокрутки
-        // 2 недели назад, текущая, 2 недели вперед
-        val startDate = monday.minusWeeks(2)
+        // Показываем 9 недель (63 дня) - чтобы покрыть весь период с 30 марта по 31 мая
+        val startCalendar = monday.minusWeeks(4)
 
-        return (0 until 35).map { offset ->
-            startDate.plusDays(offset.toLong())
+        return (0 until 63).map { offset ->
+            startCalendar.plusDays(offset.toLong())
                 .atStartOfDay(ZoneId.systemDefault())
                 .toInstant()
+        }.filter { date ->
+            val dateLocal = date.atZone(ZoneId.systemDefault()).toLocalDate()
+            !dateLocal.isBefore(startDate) && !dateLocal.isAfter(endDate)
         }
     }
 
